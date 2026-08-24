@@ -1,0 +1,33 @@
+.fallbackName {
+  display: inline-block;
+  position: relative;
+}
+
+.reveal {
+  display: inline-block;
+  font-family: var(--font-serif);
+  font-style: italic;
+  background: linear-gradient(100deg, var(--color-ivory) 0%, var(--color-gold) 45%, var(--color-ivory) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.tamil .reveal {
+  font-family: var(--font-tamil);
+  font-style: normal;
+}
+
+.svgName {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.strokePath {
+  fill: none;
+  stroke: var(--color-gold);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}

@@ -1,0 +1,54 @@
+.control {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 150;
+  width: 46px;
+  height: 46px;
+  border-radius: 999px;
+  border: 1px solid rgba(205, 168, 107, 0.45);
+  background: rgba(14, 11, 9, 0.75);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  height: 16px;
+}
+
+.bars span {
+  width: 3px;
+  height: 6px;
+  background: var(--color-gold-soft);
+  border-radius: 2px;
+  transition: height 0.3s ease;
+}
+
+.playing span {
+  animation: wave 1s ease-in-out infinite;
+}
+
+.playing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.playing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes wave {
+  0%, 100% { height: 6px; }
+  50% { height: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .playing span {
+    animation: none;
+    height: 12px;
+  }
+}

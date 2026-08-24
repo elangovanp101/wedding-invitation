@@ -1,0 +1,60 @@
+.footer {
+    padding: clamp(4rem, 14vh, 8rem) 6vw clamp(2rem, 6vh, 3rem);
+    text-align: center;
+    border-top: 1px solid rgba(205, 168, 107, 0.15);
+}
+
+.closing {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 3rem;
+}
+
+.kicker {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+}
+
+.names {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    color: var(--color-gold-soft);
+}
+
+.namesTamil {
+    font-family: var(--font-tamil);
+    font-size: clamp(1.2rem, 3vw, 1.6rem);
+    color: rgba(244, 234, 217, 0.8);
+}
+
+.thankYou {
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    color: rgba(244, 234, 217, 0.7);
+    margin-top: 0.5rem;
+}
+
+.bottomBar {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: rgba(244, 234, 217, 0.5);
+}
+
+.links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.links a:hover {
+    color: var(--color-gold);
+}

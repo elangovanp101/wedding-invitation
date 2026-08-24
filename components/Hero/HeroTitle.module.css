@@ -1,0 +1,39 @@
+.heroTitle {
+  padding: clamp(4.5rem, 16vh, 8rem) 6vw clamp(2rem, 8vh, 4rem);
+  text-align: center;
+}
+
+.inner {
+  max-width: 40rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.meta {
+  font-family: var(--font-sans);
+  font-size: 0.66rem;
+  letter-spacing: 0.3em;
+  color: var(--color-gold);
+}
+
+.names {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: clamp(2.1rem, 7vw, 3.6rem);
+  color: var(--color-gold-soft);
+}
+
+.heart {
+  color: var(--color-gold);
+  font-style: normal;
+}
+
+.tagline {
+  font-family: var(--font-serif);
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  line-height: 1.7;
+  color: rgba(244, 234, 217, 0.75);
+}

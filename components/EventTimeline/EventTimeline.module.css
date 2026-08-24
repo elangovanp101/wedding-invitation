@@ -1,0 +1,156 @@
+/* filepath: /wedding-invitation/components/EventTimeline/EventTimeline.module.css */
+.section {
+    padding: clamp(3rem, 8vh, 5rem) 0;
+}
+
+.sectionTitle {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    text-align: center;
+    color: var(--color-gold-soft);
+    margin-bottom: clamp(2rem, 6vh, 3.5rem);
+    padding: 0 6vw;
+}
+
+.scene {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90vh;
+    min-height: 90svh;
+    padding: 4rem 6vw;
+    overflow: hidden;
+    border-top: 1px solid rgba(205, 168, 107, 0.15);
+}
+
+.art {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+/* Very subtle, slow diagonal shine sweeping across each scene — not static, not flashy. */
+.shimmer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(115deg, transparent 42%, rgba(255, 255, 255, 0.05) 50%, transparent 58%);
+    background-size: 260% 260%;
+    animation: shimmerSweep 11s linear infinite;
+}
+
+@keyframes shimmerSweep {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .shimmer {
+        animation: none;
+    }
+}
+
+.content {
+    position: relative;
+    z-index: 2;
+    max-width: 26rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.icon {
+    width: 32px;
+    height: 32px;
+    color: var(--color-gold);
+    margin-bottom: 0.5rem;
+}
+
+.day {
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+}
+
+.eventTitle {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 5vw, 2.8rem);
+    margin: 0.3rem 0;
+}
+
+.eventDate, .eventTime, .eventVenue, .eventFollow {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: rgba(244, 234, 217, 0.75);
+}
+
+.peekButton {
+    margin-top: 1.6rem;
+    padding: 0.75rem 1.7rem;
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    border: 1px solid rgba(205, 168, 107, 0.5);
+    color: var(--color-gold-soft);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.peekButton:hover {
+    background: var(--color-gold);
+    color: #17110a;
+}
+
+.peekPhotoWrap {
+    overflow: hidden;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+
+.peekPhoto {
+    margin-top: 1rem;
+    width: 100%;
+    max-width: 320px;
+    border-radius: 8px;
+    border: 1px solid rgba(205, 168, 107, 0.3);
+}
+
+/* Church: candlelit glow behind a quiet aisle-and-ring illustration */
+.church {
+    background:
+        radial-gradient(70% 55% at 50% 15%, rgba(244, 234, 217, 0.12), transparent 70%),
+        linear-gradient(180deg, rgba(244, 234, 217, 0.05), transparent);
+}
+
+/* Reception: darker palace evening with a chandelier-lit skyline */
+.reception {
+    background:
+        radial-gradient(120% 100% at 50% 0%, rgba(42, 15, 20, 0.45), transparent 70%),
+        linear-gradient(180deg, transparent, rgba(42, 15, 20, 0.25));
+}
+
+/* Traditional / muhurtham: warm morning light behind the gopuram and thoranam */
+.traditional {
+    background:
+        radial-gradient(70% 60% at 50% 100%, rgba(205, 168, 107, 0.14), transparent 70%),
+        linear-gradient(0deg, rgba(205, 168, 107, 0.08), transparent);
+}
+
+@media (max-width: 480px) {
+    .scene {
+        padding: 3rem 6vw;
+    }
+
+    .eventTitle {
+        font-size: 1.8rem;
+    }
+}

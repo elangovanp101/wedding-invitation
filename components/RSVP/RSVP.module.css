@@ -1,0 +1,82 @@
+.section {
+    padding: clamp(4rem, 12vh, 7rem) 6vw;
+    max-width: 70rem;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.title {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: var(--color-gold-soft);
+}
+
+.subtitle {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: rgba(244, 234, 217, 0.6);
+    margin: 0.75rem 0 2.5rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 900px) {
+    .grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.card {
+    padding: 2.25rem 1.5rem;
+    border: 1px solid rgba(205, 168, 107, 0.2);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+}
+
+.day {
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+}
+
+.eventTitle {
+    font-family: var(--font-serif);
+    font-size: 1.6rem;
+}
+
+.eventDate {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: rgba(244, 234, 217, 0.75);
+    margin-bottom: 0.5rem;
+}
+
+.actions {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
+}
+
+.actions a {
+    padding: 0.65rem 1rem;
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    border: 1px solid rgba(205, 168, 107, 0.5);
+    color: var(--color-gold-soft);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.actions a:hover {
+    background: var(--color-gold);
+    color: #17110a;
+}

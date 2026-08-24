@@ -1,0 +1,105 @@
+.section {
+  padding: clamp(3.5rem, 10vh, 6rem) 6vw;
+  text-align: center;
+}
+
+.title {
+  font-family: var(--font-serif);
+  font-size: clamp(1.8rem, 4.5vw, 2.6rem);
+  color: var(--color-gold-soft);
+}
+
+.subtitle {
+  font-family: var(--font-sans);
+  font-size: 0.85rem;
+  color: rgba(244, 234, 217, 0.65);
+  margin: 0.6rem 0 2rem;
+}
+
+.cardWrap {
+  position: relative;
+  width: min(90vw, 340px);
+  height: 190px;
+  margin: 0 auto;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(205, 168, 107, 0.35);
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.45);
+}
+
+.reveal {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background: linear-gradient(180deg, rgba(205, 168, 107, 0.14), rgba(14, 11, 9, 0.9));
+}
+
+.revealDate {
+  font-family: var(--font-serif);
+  font-size: 2rem;
+  color: var(--color-gold-soft);
+}
+
+.revealMonth {
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.3em;
+  color: var(--color-gold);
+}
+
+.revealNote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.95rem;
+  color: rgba(244, 234, 217, 0.75);
+  margin-top: 0.3rem;
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  cursor: pointer;
+}
+
+.fingerHint {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.8rem;
+  pointer-events: none;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.5));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fingerHint {
+    animation: none;
+  }
+}
+
+.confettiLayer {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.confettiPiece {
+  position: absolute;
+  top: 0;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confettiPiece {
+    display: none;
+  }
+}

@@ -1,0 +1,98 @@
+:root {
+    --color-bg: #0e0b09;
+    --color-bg-soft: #15100c;
+    --color-ivory: #f4ead9;
+    --color-gold: #cda86b;
+    --color-gold-soft: #e8d3a4;
+    --color-gold-antique: #9c7a3f;
+    --color-wine: #2a0f14;
+    --font-serif: 'Cormorant Garamond', 'Times New Roman', serif;
+    --font-sans: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-tamil: 'Noto Serif Tamil', serif;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    margin: 0;
+    padding: 0;
+    font-family: var(--font-serif);
+    background-color: var(--color-bg);
+    color: var(--color-ivory);
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+html[lang='ta'] body {
+    font-family: var(--font-tamil);
+}
+
+h1, h2, h3, h4, h5, h6 {
+    margin: 0;
+    font-weight: 500;
+}
+
+p {
+    margin: 0;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    background: none;
+    font: inherit;
+    color: inherit;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+input, textarea, select {
+    font: inherit;
+    color: inherit;
+}
+
+::selection {
+    background: var(--color-gold);
+    color: #1a140d;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Cinematic opening gate: the Hero overlay hides this until "Open Invitation" fires. */
+.pageGate {
+    transition: opacity 0.9s ease, visibility 0.9s ease;
+}
+
+.pageGate--hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.pageGate--revealed {
+    opacity: 1;
+    visibility: visible;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+    }
+}

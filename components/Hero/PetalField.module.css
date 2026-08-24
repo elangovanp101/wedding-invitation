@@ -1,0 +1,23 @@
+.petalField {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 2;
+  }
+  
+  .petal {
+    position: absolute;
+    top: 0;
+    /* size is set inline per-petal in PetalField.tsx */
+    background: linear-gradient(140deg, #f3e8d7 0%, #cdbeaa 100%);
+    border-radius: 60% 0 60% 0;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+  
+  @media (prefers-reduced-motion: reduce) {
+    .petalField {
+      display: none;
+    }
+  }

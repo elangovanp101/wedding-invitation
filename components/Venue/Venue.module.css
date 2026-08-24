@@ -1,0 +1,93 @@
+.section {
+    padding: clamp(4rem, 12vh, 7rem) 6vw;
+    max-width: 60rem;
+    margin: 0 auto;
+}
+
+.title {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    text-align: center;
+    color: var(--color-gold-soft);
+    margin-bottom: clamp(2rem, 6vh, 3.5rem);
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.card {
+    position: relative;
+    padding: 2rem;
+    border: 1px solid rgba(205, 168, 107, 0.25);
+    text-align: center;
+    overflow: hidden;
+}
+
+.icons {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.icon {
+    width: 28px;
+    height: 28px;
+    color: var(--color-gold);
+}
+
+.card h3 {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.card p {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: rgba(244, 234, 217, 0.75);
+}
+
+.actions {
+    margin-top: 1.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.actions a {
+    padding: 0.6rem 1.3rem;
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    border: 1px solid rgba(205, 168, 107, 0.5);
+    color: var(--color-gold-soft);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.actions a:hover {
+    background: var(--color-gold);
+    color: #17110a;
+}
+
+.church {
+    background:
+        radial-gradient(60% 45% at 50% 0%, rgba(244, 234, 217, 0.12), transparent 70%),
+        linear-gradient(180deg, rgba(244, 234, 217, 0.05), transparent);
+}
+
+.palace {
+    background:
+        radial-gradient(120% 100% at 50% 0%, rgba(42, 15, 20, 0.45), transparent 70%),
+        repeating-radial-gradient(circle at 85% 0%, rgba(205, 168, 107, 0.14) 0 2px, transparent 2px 38px);
+}

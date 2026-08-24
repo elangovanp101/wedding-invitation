@@ -1,0 +1,33 @@
+{
+  "name": "wedding-invitation",
+  "version": "1.0.0",
+  "description": "A premium interactive wedding invitation website for Elangovan and Selvaveena.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "framer-motion": "^11.15.0",
+    "next": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "typescript": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "26.2.0",
+    "@types/react": "19.2.18",
+    "eslint": "^7.0.0",
+    "eslint-config-next": "^11.0.0"
+  },
+  "keywords": [
+    "wedding",
+    "invitation",
+    "react",
+    "nextjs"
+  ],
+  "author": "Elangovan & Selvaveena",
+  "license": "MIT"
+}
