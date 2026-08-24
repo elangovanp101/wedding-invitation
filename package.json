@@ -13,14 +13,14 @@
     "framer-motion": "^11.15.0",
     "next": "latest",
     "react": "latest",
-    "react-dom": "latest",
-    "typescript": "^4.0.0"
+    "react-dom": "latest"
   },
   "devDependencies": {
-    "@types/node": "26.2.0",
-    "@types/react": "19.2.18",
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.2.18",
     "eslint": "^7.0.0",
-    "eslint-config-next": "^11.0.0"
+    "eslint-config-next": "^11.0.0",
+    "typescript": "^7.0.2"
   },
   "keywords": [
     "wedding",
