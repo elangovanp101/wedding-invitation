@@ -17,13 +17,13 @@ export const translations = {
       },
       intro: {
         statement: "With love & blessings",
-        details: "Elangovan and Selvaveena are delighted to invite you to be part of their wedding celebrations in Bangalore — a journey that brings together faith, family, love and Tamil tradition."
+        details: "Elan and Veena are delighted to invite you to be part of their wedding celebrations in Bangalore — a journey that brings together faith, family, love and Tamil tradition."
       },
       couple: {
         title: "Meet the Couple",
         originPerson1: "Bangalore",
         originPerson2: "Ooty",
-        routeCaption: "Two homelands, one heart",
+        routeCaption: "Together, we become one",
       },
       events: {
         title: "Wedding Celebrations",
@@ -32,46 +32,46 @@ export const translations = {
           date: "11 NOVEMBER 2026",
           time: "3:30 PM",
           venue: "St. Patrick's Church, MG Road, Bangalore",
-          followUp: "Followed by snacks",
+          followUp: "",
         },
         reception: {
           label: "Reception",
           date: "12 NOVEMBER 2026",
           time: "6:30 PM onwards",
           venue: "Palace Ground, Sheesh Mahal, Bangalore",
-          followUp: "Followed by dinner",
+          followUp: "",
         },
         traditionalWedding: {
           label: "Traditional Wedding",
           date: "13 NOVEMBER 2026",
           time: "8:00 AM",
           venue: "Palace Ground, Sheesh Mahal, Bangalore",
-          followUp: "Followed by breakfast",
+          followUp: "",
         },
       },
       venue: {
         title: "Venues",
         church: "St. Patrick's Church, MG Road, Bangalore",
-        reception: "Palace Ground, Sheesh Mahal, Bangalore",
+        reception: "Palace Ground, Palace Sheesh Mahal, Bangalore",
         viewMap: "VIEW MAP",
         getDirections: "GET DIRECTIONS",
       },
       gallery: {
         title: "Gallery",
-        subtitle: "Moments we can't wait to make",
+        subtitle: "Our Moments",
       },
       wishes: {
-        title: "A little love",
+        title: "Wished with Love",
         subtitle: "Words from family and friends",
-        namePlaceholder: "Your name",
+        namePlaceholder: "Your name please",
         messagePlaceholder: "Leave your wishes here...",
         submit: "Send Wishes",
       },
       rsvp: {
         title: "Save These Dates",
-        subtitle: "Add each celebration to your calendar so you never miss a moment.",
+        subtitle: "Add celebration to your calendar so you never miss a moment.",
         google: "Google Calendar",
-        appleOutlook: "Apple / Outlook (.ics)",
+        appleOutlook: "Apple / Outlook",
       },
       footer: {
         closingStatement: "With all our love",
@@ -104,7 +104,7 @@ export const translations = {
         title: "தம்பதியினரை சந்திக்கவும்",
         originPerson1: "பெங்களூரு",
         originPerson2: "ஊட்டி",
-        routeCaption: "இரு தாய்நாடுகள், ஒரே இதயம்",
+        routeCaption: "இரு இதயம், ஒரு பயணம்",
       },
       events: {
         title: "திருமண விழாக்கள்",

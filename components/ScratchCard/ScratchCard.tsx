@@ -125,12 +125,12 @@ export default function ScratchCard({ onReveal }: { onReveal?: () => void }) {
 
   return (
     <section className={styles.section}>
-      <h2 className={styles.title}>A Date Worth Uncovering</h2>
+      <h2 className={styles.title}>Wedding Date</h2>
       <p className={styles.subtitle}>Scratch the card below to reveal our wedding date</p>
 
       <div className={styles.cardWrap}>
         <div className={styles.reveal}>
-          <span className={styles.revealDate}>11 · 12 · 13</span>
+          <span className={styles.revealDate}>11th · 12th · 13th</span>
           <span className={styles.revealMonth}>NOVEMBER 2026</span>
           <span className={styles.revealNote}>See you there ✦</span>
         </div>

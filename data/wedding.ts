@@ -57,7 +57,7 @@ export const weddingData = {
   couple: {
     english: {
       name: "Elangovan ♥ Selvaveena",
-      story: "Elangovan and Selvaveena are delighted to invite you to be part of their wedding celebrations in Bangalore — a journey that brings together faith, family, love, and Tamil tradition."
+      story: "Elan and Veena are delighted to invite you to be part of their wedding celebrations in Bangalore — a journey that brings together faith, family, love, and Tamil tradition."
     },
     tamil: {
       name: "இளங்கோவன் ♥ செல்வவீணா",
@@ -76,7 +76,7 @@ export const weddingData = {
       date: "11 November 2026",
       time: "3:30 PM",
       venue: "St. Patrick's Church, MG Road, Bangalore",
-      details: "Followed by snacks",
+      details: "",
       start: "2026-11-11T15:30:00+05:30",
       end: "2026-11-11T17:00:00+05:30",
     },
@@ -85,8 +85,8 @@ export const weddingData = {
       title: "Reception",
       date: "12 November 2026",
       time: "6:30 PM onwards",
-      venue: "Palace Ground, Sheesh Mahal, Bangalore",
-      details: "Followed by dinner",
+      venue: "Palace Ground, Palace Sheesh Mahal, Bangalore",
+      details: "",
       start: "2026-11-12T18:30:00+05:30",
       end: "2026-11-12T22:00:00+05:30",
     },
@@ -95,8 +95,8 @@ export const weddingData = {
       title: "Traditional Wedding",
       date: "13 November 2026",
       time: "8:00 AM",
-      venue: "Palace Ground, Sheesh Mahal, Bangalore",
-      details: "Followed by breakfast",
+      venue: "Palace Ground, Palace Sheesh Mahal, Bangalore",
+      details: "",
       start: "2026-11-13T08:00:00+05:30",
       end: "2026-11-13T10:30:00+05:30",
     }
@@ -124,7 +124,7 @@ export const weddingData = {
   // PLACEHOLDER: english track reuses the Tamil song for now — swap in an English-appropriate track later.
   musicTracks: {
     english: "/audio/tamil_song.mp3",
-    tamil: "/audio/tamil_song.mp3",
+    tamil: "/audio/tamil_song2.mp3",
   } as Record<MusicSection, string>,
   // PLACEHOLDER: swap src with real photography. `size` drives the editorial masonry layout.
   gallery: [
