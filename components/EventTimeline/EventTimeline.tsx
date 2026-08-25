@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './EventTimeline.module.css';
 import { useLanguage } from '../../context/LanguageContext';
+import { useMusic } from '../../context/MusicContext';
 import { ChurchIcon, ReceptionIcon, TraditionalIcon } from '../icons/MoodIcons';
 import { ChurchArt, ReceptionArt, TraditionalArt } from './SceneArt';
 
@@ -26,14 +27,33 @@ const moodImage: Record<string, string> = {
 
 export default function EventTimeline() {
   const { t } = useLanguage();
+  const music = useMusic();
   const copy = t.invitation.events;
   const [peeked, setPeeked] = useState<Record<string, boolean>>({});
+  const sceneRefs = useRef<Record<string, HTMLElement | null>>({});
 
   const entries = [
     { mood: 'church', ...copy.churchWedding },
     { mood: 'reception', ...copy.reception },
     { mood: 'traditional', ...copy.traditionalWedding },
   ];
+
+  // Plays a short bell/chant sting once, layered over the main track, the moment a guest
+  // scrolls a church or traditional scene into view (reception has no sting — no data yet).
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (observedEntries) => {
+        observedEntries.forEach((observed) => {
+          if (!observed.isIntersecting) return;
+          const mood = observed.target.getAttribute('data-mood');
+          if (mood === 'church' || mood === 'traditional') music.playSting(mood);
+        });
+      },
+      { threshold: 0.5 }
+    );
+    Object.values(sceneRefs.current).forEach((el) => el && observer.observe(el));
+    return () => observer.disconnect();
+  }, [music]);
 
   return (
     <section id="celebrations" className={styles.section}>
@@ -45,6 +65,8 @@ export default function EventTimeline() {
         return (
           <motion.article
             key={entry.mood}
+            ref={(el) => { sceneRefs.current[entry.mood] = el; }}
+            data-mood={entry.mood}
             className={`${styles.scene} ${styles[entry.mood]}`}
             initial={{ opacity: 0, y: 60 }}
             whileInView={{ opacity: 1, y: 0 }}

@@ -126,6 +126,13 @@ export const weddingData = {
     english: "/audio/tamil_song.mp3",
     tamil: "/audio/tamil_song2.mp3",
   } as Record<MusicSection, string>,
+  // PLACEHOLDER: short one-shot sounds layered over the main track when a guest scrolls into
+  // that celebration's section (e.g. church-bell.mp3, traditional-chant.mp3). Add real files later —
+  // playSting() silently no-ops if a path is empty.
+  stingTracks: {
+    church: "",
+    traditional: "",
+  } as Record<'church' | 'traditional', string>,
   // PLACEHOLDER: swap src with real photography. `size` drives the editorial masonry layout.
   gallery: [
     { src: "/images/elanveena.jpeg", alt: "Wedding detail", size: "wide" },

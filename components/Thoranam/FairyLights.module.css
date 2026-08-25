@@ -1,0 +1,40 @@
+.lights {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  z-index: 6;
+  pointer-events: none;
+}
+
+.wire {
+  fill: none;
+  stroke: rgba(205, 168, 107, 0.3);
+  stroke-width: 0.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.bulb {
+  fill: #e5c88e;
+  filter: drop-shadow(0 0 2px rgba(229, 200, 142, 0.9));
+  animation: bulbGlow 2.8s ease-in-out infinite;
+}
+
+@keyframes bulbGlow {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@media (max-width: 640px) {
+  .lights {
+    height: 60px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bulb {
+    animation: none;
+    opacity: 0.75;
+  }
+}

@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './ScratchCard.module.css';
+import Fireworks from '../Fireworks/Fireworks';
 
-const REVEAL_THRESHOLD = 0.6;
+const REVEAL_THRESHOLD = 0.45;
 const CONFETTI_COLORS = ['#cda86b', '#e8d3a4', '#8f2a3a', '#f4ead9', '#5c7d6b'];
 
 function ConfettiBurst({ onDone }: { onDone: () => void }) {
@@ -46,6 +47,7 @@ export default function ScratchCard({ onReveal }: { onReveal?: () => void }) {
   const moveCountRef = useRef(0);
   const [revealed, setRevealed] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
+  const [showFireworks, setShowFireworks] = useState(false);
   const [hasTouched, setHasTouched] = useState(false);
 
   useEffect(() => {
@@ -67,27 +69,25 @@ export default function ScratchCard({ onReveal }: { onReveal?: () => void }) {
     ctx.fillText('SCRATCH TO REVEAL', width / 2, height / 2 + 4);
   }, []);
 
-  // Only the middle needs to be cleared — no need to scratch the whole card.
+  // Checks how much of the WHOLE card has been scratched — not just a small center box —
+  // so the reveal never silently waits on a spot the guest didn't happen to scratch.
   const checkProgress = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || revealed) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     const { width, height } = canvas;
-    const boxW = width * 0.34;
-    const boxH = height * 0.4;
-    const startX = Math.floor((width - boxW) / 2);
-    const startY = Math.floor((height - boxH) / 2);
-    const region = ctx.getImageData(startX, startY, boxW, boxH).data;
+    const region = ctx.getImageData(0, 0, width, height).data;
     let cleared = 0;
     let sampled = 0;
-    for (let i = 3; i < region.length; i += 4 * 4) {
+    for (let i = 3; i < region.length; i += 4 * 8) {
       sampled += 1;
       if (region[i] === 0) cleared += 1;
     }
     if (cleared / sampled > REVEAL_THRESHOLD) {
       setRevealed(true);
       setShowConfetti(true);
+      setShowFireworks(true);
       onReveal?.();
       ctx.clearRect(0, 0, width, height);
     }
@@ -158,6 +158,7 @@ export default function ScratchCard({ onReveal }: { onReveal?: () => void }) {
       </div>
 
       <AnimatePresence>{showConfetti && <ConfettiBurst onDone={() => setShowConfetti(false)} />}</AnimatePresence>
+      {showFireworks && <Fireworks grand onDone={() => setShowFireworks(false)} />}
     </section>
   );
 }

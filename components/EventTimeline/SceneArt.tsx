@@ -5,7 +5,7 @@ type ArtProps = { className?: string };
 /** Soft aisle perspective, gently breathing, converging toward a wedding ring motif. */
 export function ChurchArt({ className }: ArtProps) {
   return (
-    <svg viewBox="0 0 400 300" className={className} preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <svg viewBox="0 0 400 300" className={className} preserveAspectRatio="xMidYMax meet" aria-hidden="true">
       <motion.g
         stroke="rgba(205,168,107,0.35)"
         strokeWidth="1"
@@ -44,7 +44,7 @@ export function ReceptionArt({ className }: ArtProps) {
     { x: 295, w: 26, h: 80 }, { x: 330, w: 40, h: 140 }, { x: 375, w: 25, h: 90 },
   ];
   return (
-    <svg viewBox="0 0 400 220" className={className} preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <svg viewBox="0 0 400 220" className={className} preserveAspectRatio="xMidYMax meet" aria-hidden="true">
       <motion.g
         fill="rgba(205,168,107,0.16)"
         animate={{ opacity: [0.75, 1, 0.75] }}
@@ -94,7 +94,7 @@ export function TraditionalArt({ className }: ArtProps) {
   ];
 
   return (
-    <svg viewBox="0 0 400 220" className={className} preserveAspectRatio="xMidYMax slice" aria-hidden="true">
+    <svg viewBox="0 0 400 220" className={className} preserveAspectRatio="xMidYMax meet" aria-hidden="true">
       {/* distant gopuram silhouette, kept faint so the mandapam reads as the foreground */}
       <motion.g
         fill="rgba(205,168,107,0.08)"

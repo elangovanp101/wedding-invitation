@@ -1,14 +1,51 @@
-import { useState, useRef, useEffect, useCallback, FormEvent } from 'react';
+import { useState, useRef, useCallback, useEffect, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Wishes.module.css';
 import { useLanguage } from '../../context/LanguageContext';
 import { weddingData } from '../../data/wedding';
 
-const REACTIONS = ['♥', '🥰', '🎉', '🌸', '🪔'];
+const REACTIONS = ['♥', '🥰', '🎉', '🌸', '🌿'];
 const ACCENTS = ['accentGold', 'accentRose', 'accentJasmine', 'accentSlate'];
+const MAX_MESSAGE_LENGTH = 160;
+const SHOWER_LIFETIME_MS = 2800;
 
 type Wish = { name: string; message: string; reaction: string };
-type Burst = { id: number; emoji: string; x: number; y: number; scale: number; duration: number };
+type ShowerPiece = { id: number; left: number; delay: number; duration: number; drift: number; rotate: number };
+
+function initial(name: string) {
+  return name.trim().charAt(0).toUpperCase() || '✦';
+}
+
+/** Full-page shower of the tapped reaction, falling from the sky for a few seconds. */
+function ReactionShower({ emoji }: { emoji: string }) {
+  const pieces = useRef<ShowerPiece[]>(
+    Array.from({ length: 34 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      delay: Math.random() * 0.6,
+      duration: 2.2 + Math.random() * 1.4,
+      drift: (Math.random() - 0.5) * 60,
+      rotate: (Math.random() - 0.5) * 240,
+    }))
+  ).current;
+
+  return (
+    <div className={styles.shower} aria-hidden="true">
+      {pieces.map((p) => (
+        <motion.span
+          key={p.id}
+          className={styles.showerPiece}
+          style={{ left: `${p.left}%` }}
+          initial={{ y: '-10vh', opacity: 0, rotate: 0 }}
+          animate={{ y: '110vh', x: [0, p.drift], opacity: [0, 1, 1, 0], rotate: p.rotate }}
+          transition={{ duration: p.duration, delay: p.delay, ease: 'easeIn' }}
+        >
+          {emoji}
+        </motion.span>
+      ))}
+    </div>
+  );
+}
 
 export default function Wishes() {
   const { t } = useLanguage();
@@ -17,69 +54,45 @@ export default function Wishes() {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [reaction, setReaction] = useState(REACTIONS[0]);
-  const [bursts, setBursts] = useState<Burst[]>([]);
   const [counts, setCounts] = useState<Record<string, number>>({});
+  const [showerEmoji, setShowerEmoji] = useState<string | null>(null);
   const [thankYouName, setThankYouName] = useState<string | null>(null);
+  const [paused, setPaused] = useState(false);
   const thankYouTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const feedRef = useRef<HTMLDivElement | null>(null);
-  const pausedRef = useRef(false);
-  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  // Gentle auto-scroll through the feed; pauses the moment a guest touches or hovers it.
+  // Auto-grows the message box as the guest types, instead of a small fixed box with a scrollbar.
   useEffect(() => {
-    const feed = feedRef.current;
-    if (!feed) return;
-    const id = setInterval(() => {
-      if (pausedRef.current) return;
-      if (feed.scrollTop + feed.clientHeight >= feed.scrollHeight - 1) {
-        feed.scrollTop = 0;
-      } else {
-        feed.scrollTop += 0.6;
-      }
-    }, 30);
-    return () => clearInterval(id);
-  }, []);
+    const el = textareaRef.current;
+    if (!el) return;
+    el.style.height = 'auto';
+    el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
+  }, [message]);
 
-  const pause = useCallback(() => {
-    pausedRef.current = true;
-    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
-  }, []);
-
-  const resumeSoon = useCallback(() => {
-    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
-    resumeTimerRef.current = setTimeout(() => {
-      pausedRef.current = false;
-    }, 2200);
-  }, []);
-
-  // Facebook-reels style burst: a little flurry of varied-size emojis flies up per tap.
-  const handleReact = (emoji: string) => {
-    const flurry: Burst[] = Array.from({ length: 5 + Math.floor(Math.random() * 3) }, () => ({
-      id: Date.now() + Math.random(),
-      emoji,
-      x: (Math.random() - 0.5) * 70,
-      y: Math.random() * 12,
-      scale: 0.8 + Math.random() * 1.2,
-      duration: 1.3 + Math.random() * 1.3,
-    }));
-    setBursts((prev) => [...prev, ...flurry]);
+  // Fills the sky with the tapped reaction for a few seconds — replaces the old localized burst.
+  const handleReact = useCallback((emoji: string) => {
     setCounts((prev) => ({ ...prev, [emoji]: (prev[emoji] ?? 0) + 1 }));
-    const ids = flurry.map((b) => b.id);
-    setTimeout(() => setBursts((prev) => prev.filter((b) => !ids.includes(b.id))), 2800);
-  };
+    setShowerEmoji(emoji);
+    if (showerTimerRef.current) clearTimeout(showerTimerRef.current);
+    showerTimerRef.current = setTimeout(() => setShowerEmoji(null), SHOWER_LIFETIME_MS);
+  }, []);
 
   // NOTE: front-end only for now — connect to a real backend/API before going live.
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !message.trim()) return;
-    setWishes((prev) => [{ name, message, reaction }, ...prev]);
+    setWishes((prev) => [{ name, message: message.slice(0, MAX_MESSAGE_LENGTH), reaction }, ...prev]);
     setThankYouName(name);
     setName('');
     setMessage('');
     if (thankYouTimerRef.current) clearTimeout(thankYouTimerRef.current);
     thankYouTimerRef.current = setTimeout(() => setThankYouName(null), 4200);
   };
+
+  // Duplicated once so the CSS marquee loop is seamless — no scroll container involved,
+  // so this can never trap page scrolling on mobile.
+  const ticker = wishes.length ? [...wishes, ...wishes] : [];
 
   return (
     <section id="wishes" className={styles.section}>
@@ -100,47 +113,31 @@ export default function Wishes() {
             {counts[r] ? <span className={styles.reactCount}>{counts[r]}</span> : null}
           </button>
         ))}
-        <AnimatePresence>
-          {bursts.map((b) => (
-            <motion.span
-              key={b.id}
-              className={styles.burst}
-              style={{ left: `calc(50% + ${b.x}px)`, fontSize: `${1.1 * b.scale}rem` }}
-              initial={{ opacity: 1, y: 0, rotate: 0 }}
-              animate={{ opacity: 0, y: -140 - b.y * 4, rotate: (b.x > 0 ? 1 : -1) * 25 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: b.duration, ease: 'easeOut' }}
-            >
-              {b.emoji}
-            </motion.span>
-          ))}
-        </AnimatePresence>
       </div>
 
+      {showerEmoji && <ReactionShower emoji={showerEmoji} />}
+
+      {/* Instagram-style ticker: small post chips drifting past, 2-3 visible at once. */}
       <div
-        className={styles.wall}
-        ref={feedRef}
-        onMouseEnter={pause}
-        onMouseLeave={resumeSoon}
-        onTouchStart={pause}
-        onTouchEnd={resumeSoon}
-        onWheel={pause}
+        className={`${styles.tickerViewport} ${paused ? styles.tickerPaused : ''}`}
+        onMouseEnter={() => setPaused(true)}
+        onMouseLeave={() => setPaused(false)}
+        onTouchStart={() => setPaused(true)}
+        onTouchEnd={() => setPaused(false)}
       >
-        {wishes.map((wish, i) => (
-          <motion.article
-            key={`${wish.name}-${i}`}
-            className={`${styles.card} ${styles[ACCENTS[i % ACCENTS.length]]}`}
-            initial={{ opacity: 0, y: 16 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: 0.6, delay: (i % 5) * 0.06 }}
-          >
-            <p className={styles.message}>{wish.message}</p>
-            <p className={styles.author}>
-              — {wish.name} <span className={styles.reaction}>{wish.reaction}</span>
-            </p>
-          </motion.article>
-        ))}
+        <div className={styles.tickerTrack}>
+          {ticker.map((wish, i) => (
+            <article key={`${wish.name}-${i}`} className={`${styles.card} ${styles[ACCENTS[i % ACCENTS.length]]}`}>
+              <span className={styles.avatar}>{initial(wish.name)}</span>
+              <div className={styles.cardBody}>
+                <p className={styles.author}>
+                  {wish.name} <span className={styles.reaction}>{wish.reaction}</span>
+                </p>
+                <p className={styles.message}>{wish.message}</p>
+              </div>
+            </article>
+          ))}
+        </div>
       </div>
 
       <AnimatePresence mode="wait">
@@ -167,27 +164,12 @@ export default function Wishes() {
           <motion.form
             key="form"
             onSubmit={handleSubmit}
-            className={styles.form}
+            className={styles.composer}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder={copy.namePlaceholder}
-              className={styles.input}
-              required
-            />
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              placeholder={copy.messagePlaceholder}
-              className={styles.textarea}
-              required
-            />
             <div className={styles.reactions}>
               {REACTIONS.map((r) => (
                 <button
@@ -202,9 +184,43 @@ export default function Wishes() {
                 </button>
               ))}
             </div>
-            <button type="submit" className={styles.submit}>
-              {copy.submit}
-            </button>
+
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              placeholder={copy.namePlaceholder}
+              className={styles.nameInput}
+              maxLength={40}
+              required
+            />
+
+            <div className={styles.commentRow}>
+              <span className={styles.avatarSmall} aria-hidden="true">
+                {initial(name)}
+              </span>
+              <textarea
+                ref={textareaRef}
+                value={message}
+                onChange={(e) => setMessage(e.target.value.slice(0, MAX_MESSAGE_LENGTH))}
+                placeholder={copy.messagePlaceholder}
+                className={styles.commentInput}
+                maxLength={MAX_MESSAGE_LENGTH}
+                rows={2}
+                required
+              />
+              <button
+                type="submit"
+                className={styles.sendButton}
+                aria-label={copy.submit}
+                disabled={!name.trim() || !message.trim()}
+              >
+                ➤
+              </button>
+            </div>
+            <span className={styles.charCount}>
+              {message.length}/{MAX_MESSAGE_LENGTH}
+            </span>
           </motion.form>
         )}
       </AnimatePresence>

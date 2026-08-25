@@ -1,19 +1,21 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Head from 'next/head';
 import { AnimatePresence } from 'framer-motion';
 import Hero from '../components/Hero/Hero';
 import HeroTitle from '../components/Hero/HeroTitle';
 import FlowerBurst from '../components/Hero/FlowerBurst';
+import Fireworks from '../components/Fireworks/Fireworks';
 import Navigation from '../components/Navigation/Navigation';
 import LanguageToggle from '../components/LanguageToggle/LanguageToggle';
 import MusicController from '../components/MusicController/MusicController';
+import Thoranam from '../components/Thoranam/Thoranam';
+import FairyLights from '../components/Thoranam/FairyLights';
 import Countdown from '../components/Countdown/Countdown';
 import Intro from '../components/Intro/Intro';
 import ScratchCard from '../components/ScratchCard/ScratchCard';
 import Couple from '../components/Couple/Couple';
 import EventTimeline from '../components/EventTimeline/EventTimeline';
 import Venue from '../components/Venue/Venue';
-import Gallery from '../components/Gallery/Gallery';
 import Wishes from '../components/Wishes/Wishes';
 import RSVP from '../components/RSVP/RSVP';
 import Footer from '../components/Footer/Footer';
@@ -21,11 +23,27 @@ import Footer from '../components/Footer/Footer';
 const HomePage = () => {
   const [isOpened, setIsOpened] = useState(false);
   const [showBurst, setShowBurst] = useState(false);
+  const [showFireworks, setShowFireworks] = useState(false);
+  const [showTopFireworks, setShowTopFireworks] = useState(false);
   const [dateRevealed, setDateRevealed] = useState(false);
+  const wasAtTopRef = useRef(true);
 
   // Prevent scrolling behind the cinematic opening gate.
   useEffect(() => {
     document.body.style.overflow = isOpened ? '' : 'hidden';
+  }, [isOpened]);
+
+  // Fireworks celebrate again every time the guest scrolls back up to the very top —
+  // not just once on the opening moment.
+  useEffect(() => {
+    if (!isOpened) return;
+    const handleScroll = () => {
+      const atTop = window.scrollY < 40;
+      if (atTop && !wasAtTopRef.current) setShowTopFireworks(true);
+      wasAtTopRef.current = atTop;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [isOpened]);
 
   return (
@@ -54,14 +72,19 @@ const HomePage = () => {
             onOpen={() => {
               setIsOpened(true);
               setShowBurst(true);
+              setShowFireworks(true);
             }}
           />
         )}
       </AnimatePresence>
 
       {showBurst && <FlowerBurst onDone={() => setShowBurst(false)} />}
+      {showFireworks && <Fireworks onDone={() => setShowFireworks(false)} />}
+      {showTopFireworks && <Fireworks onDone={() => setShowTopFireworks(false)} />}
 
       <div className={`pageGate ${isOpened ? 'pageGate--revealed' : 'pageGate--hidden'}`}>
+        <Thoranam />
+        <FairyLights />
         <Navigation />
         <LanguageToggle />
         <main>
@@ -72,7 +95,6 @@ const HomePage = () => {
           <Couple />
           <EventTimeline />
           <Venue />
-          <Gallery />
           <Wishes />
           <RSVP />
         </main>

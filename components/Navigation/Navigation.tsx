@@ -8,7 +8,6 @@ const links = [
   { id: 'our-story', key: 'ourStory' },
   { id: 'celebrations', key: 'celebrations' },
   { id: 'venue', key: 'venue' },
-  { id: 'gallery', key: 'gallery' },
   { id: 'wishes', key: 'wishes' },
   { id: 'rsvp', key: 'rsvp' },
 ] as const;
@@ -25,13 +24,24 @@ export default function Navigation() {
 
   return (
     <div className={styles.wrapper}>
+      <button
+        type="button"
+        className={styles.trigger}
+        onClick={() => setOpen((o) => !o)}
+        aria-label={open ? 'Close navigation' : 'Open navigation'}
+        aria-expanded={open}
+      >
+        <span className={`${styles.bar} ${open ? styles.barOpenTop : ''}`} />
+        <span className={`${styles.bar} ${open ? styles.barOpenMid : ''}`} />
+        <span className={`${styles.bar} ${open ? styles.barOpenBottom : ''}`} />
+      </button>
       <AnimatePresence>
         {open && (
           <motion.ul
             className={styles.menu}
-            initial={{ opacity: 0, y: 12 }}
+            initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 12 }}
+            exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.35 }}
           >
             {links.map((link) => (
@@ -44,17 +54,6 @@ export default function Navigation() {
           </motion.ul>
         )}
       </AnimatePresence>
-      <button
-        type="button"
-        className={styles.trigger}
-        onClick={() => setOpen((o) => !o)}
-        aria-label={open ? 'Close navigation' : 'Open navigation'}
-        aria-expanded={open}
-      >
-        <span className={`${styles.bar} ${open ? styles.barOpenTop : ''}`} />
-        <span className={`${styles.bar} ${open ? styles.barOpenMid : ''}`} />
-        <span className={`${styles.bar} ${open ? styles.barOpenBottom : ''}`} />
-      </button>
     </div>
   );
 }

@@ -9,6 +9,8 @@ type MusicContextValue = {
   toggle: () => void;
   /** Crossfades to the track mapped to this section. See data/wedding.ts musicTracks. */
   setSection: (section: MusicSection) => void;
+  /** Plays a short one-shot sound (e.g. church bell) once per visit, layered over the main track. */
+  playSting: (key: 'church' | 'traditional') => void;
 };
 
 const MusicContext = createContext<MusicContextValue | undefined>(undefined);
@@ -23,6 +25,13 @@ export function MusicProvider({ children }: { children: ReactNode }) {
   const activeRef = useRef<'A' | 'B'>('A');
   const fadeIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const hasStartedRef = useRef(false);
+  // True once a play() call has actually succeeded — after that we stop retrying autoplay.
+  const unlockedRef = useRef(false);
+  // True while the guest has explicitly paused via the control — the autoplay-retry
+  // listener must never override that (this was the "music restarts on any click" bug).
+  const userPausedRef = useRef(false);
+  const stingRef = useRef<HTMLAudioElement | null>(null);
+  const playedStingsRef = useRef<Set<string>>(new Set());
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSection, setCurrentSection] = useState<MusicSection>('english');
@@ -32,7 +41,7 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     const b = new Audio();
     a.loop = true;
     b.loop = true;
-    a.preload = 'none';
+    a.preload = 'auto';
     b.preload = 'none';
     a.volume = 0;
     b.volume = 0;
@@ -40,21 +49,40 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     audioARef.current = a;
     audioBRef.current = b;
 
+    // Muted autoplay is allowed by every browser without a gesture — prime the track silently
+    // from the moment the page loads, then unmute it later (see fadeTo) with no play() needed.
+    a.muted = true;
+    a.play().catch(() => {});
+
+    const sting = new Audio();
+    sting.preload = 'none';
+    stingRef.current = sting;
+
     return () => {
       a.pause();
       b.pause();
+      sting.pause();
       if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
     };
   }, []);
 
   // If the gate auto-opened without a click, the browser blocks autoplay until the
   // guest's first real interaction anywhere on the page — retry playback then.
+  // Stops entirely once autoplay is confirmed unlocked, or once the guest intentionally pauses,
+  // so a stray tap elsewhere on the page never resumes music the guest turned off.
   useEffect(() => {
     const retry = () => {
-      if (!hasStartedRef.current) return;
+      if (!hasStartedRef.current || unlockedRef.current || userPausedRef.current) return;
       const active = activeRef.current === 'A' ? audioARef.current : audioBRef.current;
-      if (active && active.paused) {
-        active.play().then(() => setIsPlaying(true)).catch(() => {});
+      if (active && (active.paused || active.muted)) {
+        active.muted = false;
+        active
+          .play()
+          .then(() => {
+            setIsPlaying(true);
+            unlockedRef.current = true;
+          })
+          .catch(() => {});
       }
     };
     const events: (keyof DocumentEventMap)[] = ['pointerdown', 'keydown', 'touchstart'];
@@ -67,9 +95,15 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     const steps = FADE_MS / FADE_STEP_MS;
     let step = 0;
     incoming.volume = 0;
+    // Reveals sound on a track that (for the main English track) is very likely already
+    // silently autoplaying from page load — no play() call needing a gesture is required.
+    incoming.muted = false;
     incoming
       .play()
-      .then(() => setIsPlaying(true))
+      .then(() => {
+        setIsPlaying(true);
+        unlockedRef.current = true;
+      })
       .catch(() => {
         /* autoplay blocked — start() can be called again later (e.g. on Open Invitation) to retry */
       });
@@ -90,12 +124,17 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     if (!a) return;
     if (!hasStartedRef.current) {
       hasStartedRef.current = true;
+      userPausedRef.current = false;
       fadeTo(a, null);
       return;
     }
     // Already attempted once — if it was blocked by autoplay policy, retry on this call.
-    if (a.paused) {
-      a.play().then(() => setIsPlaying(true)).catch(() => {});
+    if ((a.paused || a.muted) && !userPausedRef.current) {
+      a.muted = false;
+      a.play().then(() => {
+        setIsPlaying(true);
+        unlockedRef.current = true;
+      }).catch(() => {});
     }
   }, [fadeTo]);
 
@@ -109,10 +148,15 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     if (isPlaying) {
       active.pause();
       setIsPlaying(false);
+      userPausedRef.current = true;
     } else {
+      userPausedRef.current = false;
       active
         .play()
-        .then(() => setIsPlaying(true))
+        .then(() => {
+          setIsPlaying(true);
+          unlockedRef.current = true;
+        })
         .catch(() => {});
     }
   }, [isPlaying, start]);
@@ -139,8 +183,23 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     [fadeTo]
   );
 
+  // Short one-shot sound (church bell / traditional chant) layered over the main track once
+  // per visit, when a guest scrolls into that celebration's section. Doesn't affect the loop.
+  const playSting = useCallback((key: 'church' | 'traditional') => {
+    if (playedStingsRef.current.has(key)) return;
+    const src = weddingData.stingTracks[key];
+    if (!src) return;
+    playedStingsRef.current.add(key);
+    const sting = stingRef.current;
+    if (!sting) return;
+    sting.src = src;
+    sting.currentTime = 0;
+    sting.volume = 0.65;
+    sting.play().catch(() => {});
+  }, []);
+
   return (
-    <MusicContext.Provider value={{ isPlaying, currentSection, start, toggle, setSection }}>
+    <MusicContext.Provider value={{ isPlaying, currentSection, start, toggle, setSection, playSting }}>
       {children}
     </MusicContext.Provider>
   );

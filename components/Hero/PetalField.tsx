@@ -9,7 +9,17 @@ type Petal = {
   delay: number;
   drift: number;
   spin: number;
+  colors: [string, string];
 };
+
+// Muted, elegant petal hues — ivory/gold as before, plus a touch of jasmine, rose and lavender.
+const PETAL_COLORS: [string, string][] = [
+  ['#f3e8d7', '#cdbeaa'],
+  ['#e8d3a4', '#c9a86b'],
+  ['#e3b7bd', '#c98a94'],
+  ['#d7c7e8', '#b8a0d0'],
+  ['#eee7b8', '#d4c98a'],
+];
 
 /** Decorative jasmine petal field. Replace .petal shape with SVG art later. */
 export default function PetalField({ count = 12 }: { count?: number }) {
@@ -25,6 +35,7 @@ export default function PetalField({ count = 12 }: { count?: number }) {
         delay: -Math.random() * 20,
         drift: 20 + Math.random() * 50,
         spin: 180 + Math.random() * 220,
+        colors: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
       }))
     );
   }, [count]);
@@ -41,6 +52,7 @@ export default function PetalField({ count = 12 }: { count?: number }) {
             left: `${p.left}%`,
             width: 9 * p.scale,
             height: 14 * p.scale,
+            background: `linear-gradient(140deg, ${p.colors[0]} 0%, ${p.colors[1]} 100%)`,
             filter: p.scale < 0.85 ? 'blur(1.2px)' : 'none',
           }}
           initial={{ y: '-12vh', x: 0, rotate: 0, opacity: 0 }}

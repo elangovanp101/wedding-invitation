@@ -26,17 +26,61 @@
 }
 
 .photo {
+    position: relative;
     margin: 0;
     aspect-ratio: 3 / 4;
-    overflow: hidden;
-    border: 1px solid rgba(205, 168, 107, 0.25);
+    overflow: visible;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.photo img {
+.archSvg {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    filter: grayscale(0.15) contrast(1.05);
+}
+
+.monogram {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(1.7rem, 5vw, 2.5rem);
+    letter-spacing: 0.02em;
+    color: rgba(205, 168, 107, 0.6);
+}
+
+.iconBadge {
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #17110a;
+    border: 1px solid rgba(205, 168, 107, 0.45);
+    color: var(--color-gold);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.iconBadge svg {
+    width: 17px;
+    height: 17px;
+}
+
+.iconBadgeGroom {
+    color: #9db2d6;
+}
+
+.iconBadgeBride {
+    color: #d68a94;
 }
 
 .center {

@@ -1,5 +1,5 @@
 .section {
-    padding: clamp(4rem, 12vh, 7rem) 6vw;
+    padding: clamp(4rem, 12vh, 7rem) 0;
     max-width: 60rem;
     margin: 0 auto;
     text-align: center;
@@ -9,6 +9,7 @@
     font-family: var(--font-serif);
     font-size: clamp(2rem, 5vw, 3.2rem);
     color: var(--color-gold-soft);
+    padding: 0 6vw;
 }
 
 .subtitle {
@@ -16,6 +17,7 @@
     font-size: 0.9rem;
     color: rgba(244, 234, 217, 0.65);
     margin: 0.75rem 0 2.5rem;
+    padding: 0 6vw;
 }
 
 .reactBar {
@@ -24,7 +26,8 @@
     justify-content: center;
     flex-wrap: wrap;
     gap: 1.1rem;
-    margin: 0 auto 3rem;
+    margin: 0 auto 2.5rem;
+    padding: 0 6vw;
 }
 
 .reactButton {
@@ -67,82 +70,118 @@
     padding: 1px 7px;
 }
 
-/* Reels-style flying reaction: many bursts of varied size drift up and fade. */
-.burst {
-    position: absolute;
-    bottom: 8px;
-    pointer-events: none;
-    z-index: 200;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.4));
-}
-
 @media (prefers-reduced-motion: reduce) {
     .reactButton {
         animation: none;
     }
 }
 
-/* Scrollable wishes feed: gently auto-scrolls, pauses on hover/touch/manual scroll. */
-.wall {
-    max-height: 420px;
-    overflow-y: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+/* Full-page shower: fixed overlay, never intercepts scroll/touch. */
+.shower {
+    position: fixed;
+    inset: 0;
+    z-index: 300;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.showerPiece {
+    position: absolute;
+    top: 0;
+    font-size: 1.6rem;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+/* Instagram-style horizontal ticker: a CSS marquee, never a scrollable container,
+   so it can never trap vertical page scrolling on mobile. */
+.tickerViewport {
+    overflow: hidden;
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
     margin-bottom: 2.5rem;
-    text-align: left;
-    padding-right: 0.5rem;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(205, 168, 107, 0.4) transparent;
+    touch-action: pan-y;
 }
 
-.wall::-webkit-scrollbar {
-    width: 6px;
+.tickerTrack {
+    display: flex;
+    gap: 0.9rem;
+    width: max-content;
+    padding: 0.25rem 6vw;
+    animation: ticker 38s linear infinite;
 }
 
-.wall::-webkit-scrollbar-thumb {
-    background: rgba(205, 168, 107, 0.4);
-    border-radius: 999px;
+.tickerViewport:hover .tickerTrack,
+.tickerPaused .tickerTrack {
+    animation-play-state: paused;
+}
+
+@keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tickerTrack {
+        animation: none;
+    }
 }
 
 .card {
     flex-shrink: 0;
-    padding: 1.4rem 1.3rem;
+    width: clamp(150px, 42vw, 220px);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.55rem;
+    padding: 0.85rem 0.9rem;
+    text-align: left;
     background: linear-gradient(180deg, rgba(244, 234, 217, 0.06), rgba(244, 234, 217, 0.02));
     border: 1px solid rgba(205, 168, 107, 0.22);
-    border-left: 3px solid var(--color-gold);
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+    border-radius: 12px;
 }
 
-.accentGold { border-left-color: #cda86b; }
-.accentRose { border-left-color: #b06a6a; }
-.accentJasmine { border-left-color: #e8e0b0; }
-.accentSlate { border-left-color: #7d95a6; }
+.accentGold .avatar { background: rgba(205, 168, 107, 0.35); }
+.accentRose .avatar { background: rgba(176, 106, 106, 0.35); }
+.accentJasmine .avatar { background: rgba(232, 224, 176, 0.35); }
+.accentSlate .avatar { background: rgba(125, 149, 166, 0.35); }
 
-.message {
+.avatar {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-family: var(--font-serif);
-    font-size: 1.15rem;
-    line-height: 1.6;
+    font-size: 0.85rem;
+    color: var(--color-ivory);
+}
+
+.cardBody {
+    min-width: 0;
 }
 
 .author {
-    margin-top: 0.6rem;
     font-family: var(--font-sans);
-    font-size: 0.8rem;
-    color: rgba(244, 234, 217, 0.6);
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--color-gold-soft);
 }
 
-.form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    text-align: left;
-    max-width: 32rem;
-    margin: 0 auto;
+.message {
+    margin-top: 0.15rem;
+    font-family: var(--font-sans);
+    font-size: 0.76rem;
+    line-height: 1.4;
+    color: rgba(244, 234, 217, 0.8);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 
 .thankYou {
-    max-width: 32rem;
+    max-width: 26rem;
     margin: 0 auto;
     padding: 2.5rem 1.5rem;
     display: flex;
@@ -171,30 +210,30 @@
     color: rgba(244, 234, 217, 0.75);
 }
 
-.input, .textarea {
-    width: 100%;
-    padding: 0.85rem 1rem;
-    background: rgba(244, 234, 217, 0.05);
-    border: 1px solid rgba(205, 168, 107, 0.3);
-    color: var(--color-ivory);
-}
-
-.textarea {
-    min-height: 100px;
-    resize: vertical;
+/* Instagram-style comment composer */
+.composer {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    text-align: left;
+    max-width: 26rem;
+    margin: 0 auto;
+    padding: 0 6vw;
 }
 
 .reactions {
     display: flex;
+    justify-content: center;
     gap: 0.6rem;
 }
 
 .reactionButton {
-    width: 40px;
-    height: 40px;
+    width: 38px;
+    height: 38px;
     border-radius: 999px;
     border: 1px solid rgba(205, 168, 107, 0.3);
-    font-size: 1.1rem;
+    background: rgba(244, 234, 217, 0.04);
+    font-size: 1.05rem;
 }
 
 .reactionActive {
@@ -202,18 +241,93 @@
     border-color: var(--color-gold);
 }
 
-.submit {
-    align-self: center;
-    padding: 0.9rem 2.4rem;
+.nameInput {
+    width: 100%;
+    padding: 0.85rem 1.1rem;
+    background: rgba(244, 234, 217, 0.06);
+    border: 1px solid rgba(205, 168, 107, 0.3);
+    border-radius: 12px;
+    color: var(--color-ivory);
     font-family: var(--font-sans);
-    font-size: 0.72rem;
-    letter-spacing: 0.2em;
-    border: 1px solid var(--color-gold);
-    color: var(--color-gold-soft);
-    transition: background 0.3s ease, color 0.3s ease;
+    font-size: 1rem;
+    text-align: center;
 }
 
-.submit:hover {
+.commentRow {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.6rem;
+    background: rgba(244, 234, 217, 0.06);
+    border: 1px solid rgba(205, 168, 107, 0.3);
+    border-radius: 18px;
+    padding: 0.6rem 0.6rem 0.6rem 0.85rem;
+}
+
+.avatarSmall {
+    flex-shrink: 0;
+    width: 30px;
+    height: 30px;
+    border-radius: 999px;
+    background: rgba(205, 168, 107, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-serif);
+    font-size: 0.85rem;
+    color: var(--color-ivory);
+}
+
+.commentInput {
+    flex: 1;
+    min-width: 0;
+    min-height: 60px;
+    resize: none;
+    max-height: 160px;
+    overflow-y: auto;
+    background: transparent;
+    border: none;
+    color: var(--color-ivory);
+    font-family: var(--font-sans);
+    font-size: 1.05rem;
+    line-height: 1.55;
+    padding: 0.5rem 0.1rem;
+    /* Grows via JS up to max-height instead of showing a scrollbar */
+    scrollbar-width: none;
+}
+
+.commentInput::-webkit-scrollbar {
+    display: none;
+}
+
+.commentInput:focus {
+    outline: none;
+}
+
+.sendButton {
+    flex-shrink: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
     background: var(--color-gold);
     color: #17110a;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.25s ease, transform 0.15s ease;
+}
+
+.sendButton:disabled {
+    opacity: 0.35;
+}
+
+.sendButton:not(:disabled):active {
+    transform: scale(0.9);
+}
+
+.charCount {
+    align-self: flex-end;
+    font-family: var(--font-sans);
+    font-size: 0.65rem;
+    color: rgba(244, 234, 217, 0.45);
 }
