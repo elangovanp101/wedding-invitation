@@ -2,12 +2,13 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import styles from './Hero.module.css';
 import PetalField from './PetalField';
+import CarCrashIntro, { CAR_CRASH_DURATION_MS } from './CarCrashIntro';
 import HandwrittenName from '../HandwrittenName/HandwrittenName';
 import { useLanguage } from '../../context/LanguageContext';
 import { useMusic } from '../../context/MusicContext';
 
-const AUTO_OPEN_MS = 7500;
 const MUSIC_START_DELAY_MS = 50;
+const LANG_LOOP_MS = 3800;
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 type Props = { onOpen: () => void };
@@ -17,6 +18,7 @@ export default function Hero({ onOpen }: Props) {
   const music = useMusic();
   const reduceMotion = useReducedMotion();
   const [heroLang, setHeroLang] = useState<'en' | 'ta'>('en');
+  const [introDone, setIntroDone] = useState(false);
   const openedRef = useRef(false);
 
   const handleOpen = useCallback(() => {
@@ -35,20 +37,25 @@ export default function Hero({ onOpen }: Props) {
     return () => clearTimeout(timer);
   }, [music]);
 
-  // Artistic bilingual identity: English settles, drifts into Tamil, then returns.
-  // Auto-proceeds into the invitation if the guest doesn't interact.
+  // Cinematic pre-intro: two cars race in and collide before the names appear.
   useEffect(() => {
     if (reduceMotion) {
-      const timer = setTimeout(handleOpen, 3200);
-      return () => clearTimeout(timer);
+      setIntroDone(true);
+      return;
     }
-    const timers = [
-      setTimeout(() => setHeroLang('ta'), 4000),
-      setTimeout(() => setHeroLang('en'), 7000),
-      setTimeout(handleOpen, AUTO_OPEN_MS),
-    ];
-    return () => timers.forEach(clearTimeout);
-  }, [reduceMotion, handleOpen]);
+    const timer = setTimeout(() => setIntroDone(true), CAR_CRASH_DURATION_MS);
+    return () => clearTimeout(timer);
+  }, [reduceMotion]);
+
+  // Artistic bilingual identity: loops English/Tamil gently while the guest decides to open.
+  // The gate now waits for the guest — there is no auto-open.
+  useEffect(() => {
+    if (reduceMotion) return;
+    const interval = setInterval(() => {
+      setHeroLang((prev) => (prev === 'en' ? 'ta' : 'en'));
+    }, LANG_LOOP_MS);
+    return () => clearInterval(interval);
+  }, [reduceMotion]);
 
   return (
     <motion.div className={styles.hero} exit={{ opacity: 0, transition: { duration: 1.1, ease: EASE } }}>
@@ -58,6 +65,10 @@ export default function Hero({ onOpen }: Props) {
 
       <PetalField count={16} />
 
+      <AnimatePresence>{!introDone && <CarCrashIntro key="crash" />}</AnimatePresence>
+
+      {introDone && (
+        <>
       <div className={styles.metadata}>
         <motion.div
           className={styles.date}
@@ -150,6 +161,8 @@ export default function Hero({ onOpen }: Props) {
       >
         {t.invitation.hero.openInvitation}
       </motion.button>
+        </>
+      )}
     </motion.div>
   );
 }

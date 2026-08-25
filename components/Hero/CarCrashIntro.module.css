@@ -1,0 +1,38 @@
+.stage {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.car {
+  position: absolute;
+  width: clamp(70px, 16vw, 140px);
+}
+
+.carSvg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.flash {
+  position: absolute;
+  width: 40vw;
+  height: 40vw;
+  max-width: 320px;
+  max-height: 320px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(244, 234, 217, 0.9), transparent 70%);
+}
+
+.heart {
+  position: absolute;
+  font-size: clamp(3rem, 12vw, 6rem);
+  color: #8f2a3a;
+  filter: drop-shadow(0 0 20px rgba(143, 42, 58, 0.6));
+}

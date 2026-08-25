@@ -9,6 +9,8 @@ type MusicContextValue = {
   toggle: () => void;
   /** Crossfades to the track mapped to this section. See data/wedding.ts musicTracks. */
   setSection: (section: MusicSection) => void;
+  /** Layers a short one-shot sound (e.g. a church bell) on top of the background music. */
+  playOneShot: (src: string, volume?: number) => void;
 };
 
 const MusicContext = createContext<MusicContextValue | undefined>(undefined);
@@ -47,20 +49,8 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     };
   }, []);
 
-  // If the gate auto-opened without a click, the browser blocks autoplay until the
-  // guest's first real interaction anywhere on the page — retry playback then.
-  useEffect(() => {
-    const retry = () => {
-      if (!hasStartedRef.current) return;
-      const active = activeRef.current === 'A' ? audioARef.current : audioBRef.current;
-      if (active && active.paused) {
-        active.play().then(() => setIsPlaying(true)).catch(() => {});
-      }
-    };
-    const events: (keyof DocumentEventMap)[] = ['pointerdown', 'keydown', 'touchstart'];
-    events.forEach((evt) => document.addEventListener(evt, retry, { passive: true }));
-    return () => events.forEach((evt) => document.removeEventListener(evt, retry));
-  }, []);
+  // Note: playback is only ever started/stopped by start()/toggle() (i.e. the music control
+  // button or the Open Invitation click) — nothing resumes it on random taps elsewhere on the page.
 
   const fadeTo = useCallback((incoming: HTMLAudioElement, outgoing: HTMLAudioElement | null) => {
     if (fadeIntervalRef.current) clearInterval(fadeIntervalRef.current);
@@ -116,6 +106,12 @@ export function MusicProvider({ children }: { children: ReactNode }) {
         .catch(() => {});
     }
   }, [isPlaying, start]);
+
+  const playOneShot = useCallback((src: string, volume = 0.5) => {
+    const sfx = new Audio(src);
+    sfx.volume = volume;
+    sfx.play().catch(() => {});
+  }, []);
 
   const setSection = useCallback(
     (section: MusicSection) => {
