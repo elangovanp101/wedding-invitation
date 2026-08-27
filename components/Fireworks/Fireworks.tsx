@@ -15,9 +15,9 @@ function makeBurst(id: number, x: number, y: number, delay: number, scale = 1): 
   const count = 22 + Math.floor(Math.random() * 12);
   const sparks = Array.from({ length: count }, (_, i) => ({
     angle: (360 / count) * i + (Math.random() * 12 - 6),
-    distance: (90 + Math.random() * 110) * scale,
+    distance: (70 + Math.random() * 85) * scale,
     color: COLORS[Math.floor(Math.random() * COLORS.length)],
-    size: (4 + Math.random() * 4) * scale,
+    size: (3 + Math.random() * 3) * scale,
   }));
   return { id, x, y, delay, scale, sparks };
 }
@@ -27,12 +27,12 @@ function makeBurst(id: number, x: number, y: number, delay: number, scale = 1): 
 function launchVolley(round: number, grand: boolean): Burst[] {
   if (!grand) {
     return [
-      makeBurst(0, 12, 28, 0, 1.15),
-      makeBurst(1, 86, 20, 0.3, 1.1),
-      makeBurst(2, 22, 45, 0.65, 0.9),
-      makeBurst(3, 78, 48, 0.95, 1.2),
-      makeBurst(4, 8, 18, 1.35, 0.85),
-      makeBurst(5, 92, 40, 1.7, 1),
+      makeBurst(0, 12, 28, 0, 0.9),
+      makeBurst(1, 86, 20, 0.3, 0.85),
+      makeBurst(2, 22, 45, 0.65, 0.7),
+      makeBurst(3, 78, 48, 0.95, 0.95),
+      makeBurst(4, 8, 18, 1.35, 0.65),
+      makeBurst(5, 92, 40, 1.7, 0.8),
     ];
   }
   const sides = [
@@ -42,7 +42,7 @@ function launchVolley(round: number, grand: boolean): Burst[] {
   return Array.from({ length: 3 }, (_, i) => {
     const x = sides[(round + i) % 2]();
     const y = 12 + Math.random() * 45;
-    return makeBurst(round * 10 + i, x, y, i * 0.3, 1.1 + Math.random() * 0.5);
+    return makeBurst(round * 10 + i, x, y, i * 0.3, 0.9 + Math.random() * 0.4);
   });
 }
 
@@ -68,8 +68,23 @@ export default function Fireworks({ onDone, grand = false }: { onDone: () => voi
 
   if (reduceMotion) return null;
 
+  // The whole show fades gently in and out instead of popping in/out abruptly.
+  const lifetimeSeconds = totalLifetime / 1000;
+  const dissolveIn = 1.4;
+  const dissolveOut = 2.2;
+
   return (
-    <div className={styles.sky} aria-hidden="true">
+    <motion.div
+      className={styles.sky}
+      aria-hidden="true"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: [0, 1, 1, 0] }}
+      transition={{
+        duration: lifetimeSeconds,
+        times: [0, dissolveIn / lifetimeSeconds, 1 - dissolveOut / lifetimeSeconds, 1],
+        ease: 'easeInOut',
+      }}
+    >
       {/* Just a couple, kept sparing so it doesn't clutter either show. */}
       <SkyLanterns />
       <div key={round}>
@@ -100,7 +115,7 @@ export default function Fireworks({ onDone, grand = false }: { onDone: () => voi
           </span>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
 

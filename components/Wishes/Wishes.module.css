@@ -92,38 +92,38 @@
     filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
 }
 
-/* Instagram-style horizontal ticker: a CSS marquee, never a scrollable container,
-   so it can never trap vertical page scrolling on mobile. */
+/* Instagram-style horizontal ticker: a real scrollable strip with a visible, styled scrollbar
+   (touch-action keeps vertical page scrolling free even while this scrolls horizontally). */
 .tickerViewport {
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
     mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-    margin-bottom: 2.5rem;
-    touch-action: pan-y;
+    margin-bottom: 1rem;
+    touch-action: pan-x;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(205, 168, 107, 0.5) transparent;
+}
+
+.tickerViewport::-webkit-scrollbar {
+    height: 6px;
+}
+
+.tickerViewport::-webkit-scrollbar-track {
+    background: rgba(244, 234, 217, 0.06);
+    border-radius: 999px;
+}
+
+.tickerViewport::-webkit-scrollbar-thumb {
+    background: rgba(205, 168, 107, 0.55);
+    border-radius: 999px;
 }
 
 .tickerTrack {
     display: flex;
     gap: 0.9rem;
     width: max-content;
-    padding: 0.25rem 6vw;
-    animation: ticker 38s linear infinite;
-}
-
-.tickerViewport:hover .tickerTrack,
-.tickerPaused .tickerTrack {
-    animation-play-state: paused;
-}
-
-@keyframes ticker {
-    from { transform: translateX(0); }
-    to { transform: translateX(-50%); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .tickerTrack {
-        animation: none;
-    }
+    padding: 0.25rem 6vw 0.75rem;
 }
 
 .card {

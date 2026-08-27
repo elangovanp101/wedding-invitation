@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect, useRef } from 'react';
+import { motion } from 'framer-motion';
 import styles from './EventTimeline.module.css';
 import { useLanguage } from '../../context/LanguageContext';
 import { useMusic } from '../../context/MusicContext';
@@ -18,18 +18,10 @@ const moodArt: Record<string, typeof ChurchArt> = {
   traditional: TraditionalArt,
 };
 
-// PLACEHOLDER: illustrated line-art for now — swap in real venue photography/video per celebration.
-const moodImage: Record<string, string> = {
-  church: '/images/elanveena.jpeg',
-  reception: '/images/elanveena.jpeg',
-  traditional: '/images/elanveena.jpeg',
-};
-
 export default function EventTimeline() {
   const { t } = useLanguage();
   const music = useMusic();
   const copy = t.invitation.events;
-  const [peeked, setPeeked] = useState<Record<string, boolean>>({});
   const sceneRefs = useRef<Record<string, HTMLElement | null>>({});
 
   const entries = [
@@ -61,7 +53,6 @@ export default function EventTimeline() {
       {entries.map((entry, i) => {
         const Icon = moodIcon[entry.mood];
         const Art = moodArt[entry.mood];
-        const isPeeked = !!peeked[entry.mood];
         return (
           <motion.article
             key={entry.mood}
@@ -83,29 +74,6 @@ export default function EventTimeline() {
               <p className={styles.eventTime}>{entry.time}</p>
               <p className={styles.eventVenue}>{entry.venue}</p>
               <p className={styles.eventFollow}>{entry.followUp}</p>
-
-              <button
-                type="button"
-                className={styles.peekButton}
-                onClick={() => setPeeked((prev) => ({ ...prev, [entry.mood]: !prev[entry.mood] }))}
-              >
-                {isPeeked ? 'Hide venue photo' : 'Peek at the venue'}
-              </button>
-
-              <AnimatePresence>
-                {isPeeked && (
-                  <motion.div
-                    className={styles.peekPhotoWrap}
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    transition={{ duration: 0.5 }}
-                  >
-                    {/* PLACEHOLDER: swap with real venue photography */}
-                    <img src={moodImage[entry.mood]} alt={entry.venue} className={styles.peekPhoto} />
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           </motion.article>
         );

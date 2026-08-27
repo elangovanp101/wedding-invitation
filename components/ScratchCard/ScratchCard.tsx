@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './ScratchCard.module.css';
 import Fireworks from '../Fireworks/Fireworks';
+import WeddingCalendar from './WeddingCalendar';
 
 const REVEAL_THRESHOLD = 0.45;
 const CONFETTI_COLORS = ['#cda86b', '#e8d3a4', '#8f2a3a', '#f4ead9', '#5c7d6b'];
@@ -55,9 +56,15 @@ export default function ScratchCard({ onReveal }: { onReveal?: () => void }) {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+    // Render at the screen's actual pixel density — without this, the gradient/text are drawn
+    // at 1x and then stretched by the browser, which is what was making the card look blurry.
+    const dpr = window.devicePixelRatio || 1;
     const { width, height } = canvas.getBoundingClientRect();
-    canvas.width = width;
-    canvas.height = height;
+    canvas.width = width * dpr;
+    canvas.height = height * dpr;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
+    ctx.scale(dpr, dpr);
     const gradient = ctx.createLinearGradient(0, 0, width, height);
     gradient.addColorStop(0, '#8a6a3a');
     gradient.addColorStop(1, '#caa669');
@@ -130,9 +137,7 @@ export default function ScratchCard({ onReveal }: { onReveal?: () => void }) {
 
       <div className={styles.cardWrap}>
         <div className={styles.reveal}>
-          <span className={styles.revealDate}>11th · 12th · 13th</span>
-          <span className={styles.revealMonth}>NOVEMBER 2026</span>
-          <span className={styles.revealNote}>See you there ✦</span>
+          <WeddingCalendar />
         </div>
         {!revealed && (
           <canvas

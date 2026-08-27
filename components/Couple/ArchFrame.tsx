@@ -1,13 +1,119 @@
-type ArchFrameProps = { accent: string; className?: string };
+import { useId } from 'react';
+import { motion } from 'framer-motion';
+
+type ArchFrameProps = { accent: string; className?: string; decor?: 'snow' | 'ecg' };
 
 // A simple, elegant pointed palace arch — no lattice fill, just a clean double outline.
 const OUTER_PATH = 'M20,250 L20,150 Q20,60 100,30 Q180,60 180,150 L180,250';
 const INNER_PATH = 'M28,250 L28,148 Q28,66 100,40 Q172,66 172,148 L172,250';
 
-/** Decorative palace-arch niche frame, standing in for a portrait until real photography arrives. */
-export default function ArchFrame({ accent, className }: ArchFrameProps) {
+// Fixed (not random) so server/client markup always matches — no hydration mismatch.
+const SNOWFLAKES = [
+  { x: 55, delay: 0, duration: 7, size: 11, drift: 6, spin: 40 },
+  { x: 100, delay: 1.4, duration: 8, size: 8, drift: -8, spin: -30 },
+  { x: 140, delay: 2.6, duration: 6.6, size: 9, drift: 5, spin: 50 },
+  { x: 75, delay: 3.8, duration: 7.8, size: 7, drift: -4, spin: -45 },
+  { x: 122, delay: 0.7, duration: 8.6, size: 10, drift: 7, spin: 35 },
+  { x: 90, delay: 4.6, duration: 7.2, size: 6, drift: -6, spin: -25 },
+];
+
+const ECG_PATH = 'M28,175 L52,175 L62,148 L76,198 L88,160 L98,175 L172,175';
+
+/** Two meshing gears, turning in opposite directions — engineering, shown at roughly the same
+ * placement inside the arch as the ECG trace for the bride's side. Each gear rotates around its
+ * own local (0,0) via a translate wrapper — more reliable across browsers than relying on
+ * CSS transform-origin on an SVG <g>. */
+function Gear({ cx, cy, r, accent, direction, duration }: { cx: number; cy: number; r: number; accent: string; direction: 1 | -1; duration: number }) {
+  return (
+    <g transform={`translate(${cx}, ${cy})`}>
+      <motion.g
+        animate={{ rotate: direction * 360 }}
+        transition={{ duration, repeat: Infinity, ease: 'linear' }}
+      >
+        {gearTeeth(0, 0, r, 10)}
+        <circle r={r} fill="none" stroke={accent} strokeWidth="2" />
+        <circle r={r * 0.28} fill="none" stroke={accent} strokeWidth="1.6" />
+      </motion.g>
+    </g>
+  );
+}
+
+function GearMotif({ accent }: { accent: string }) {
+  return (
+    <g>
+      <Gear cx={84} cy={190} r={16} accent="rgba(205,168,107,0.55)" direction={1} duration={9} />
+      <Gear cx={120} cy={168} r={10} accent={accent} direction={-1} duration={6.5} />
+    </g>
+  );
+}
+
+function gearTeeth(cx: number, cy: number, r: number, count: number) {
+  return Array.from({ length: count }, (_, i) => {
+    const rad = ((360 / count) * i * Math.PI) / 180;
+    return (
+      <line
+        key={i}
+        x1={cx + Math.cos(rad) * r}
+        y1={cy + Math.sin(rad) * r}
+        x2={cx + Math.cos(rad) * (r + 5)}
+        y2={cy + Math.sin(rad) * (r + 5)}
+        stroke="rgba(205,168,107,0.5)"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+      />
+    );
+  });
+}
+
+/** Decorative palace-arch niche frame, standing in for a portrait until real photography arrives.
+ * `decor` adds a themed animation clipped inside the arch: falling snow + turning gears for the
+ * groom, a live ECG trace for the bride. */
+export default function ArchFrame({ accent, className, decor }: ArchFrameProps) {
+  const uid = useId();
+
   return (
     <svg viewBox="0 0 200 260" className={className} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+      <defs>
+        <clipPath id={`arch-clip-${uid}`}>
+          <path d={`${OUTER_PATH} Z`} />
+        </clipPath>
+      </defs>
+
+      {decor === 'snow' && (
+        <g clipPath={`url(#arch-clip-${uid})`}>
+          <GearMotif accent={accent} />
+          {SNOWFLAKES.map((s, i) => (
+            <motion.text
+              key={i}
+              x={s.x}
+              fontSize={s.size}
+              fill="rgba(244,234,217,0.9)"
+              initial={{ y: 38, opacity: 0, rotate: 0 }}
+              animate={{ y: 246, opacity: [0, 1, 1, 0], x: [s.x, s.x + s.drift, s.x], rotate: s.spin }}
+              transition={{ duration: s.duration, delay: s.delay, repeat: Infinity, ease: 'linear' }}
+            >
+              ❄
+            </motion.text>
+          ))}
+        </g>
+      )}
+
+      {decor === 'ecg' && (
+        <g clipPath={`url(#arch-clip-${uid})`}>
+          <path d={ECG_PATH} fill="none" stroke="rgba(185,81,95,0.3)" strokeWidth="2" />
+          <motion.path
+            d={ECG_PATH}
+            fill="none"
+            stroke="#e5949e"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeDasharray="26 400"
+            animate={{ strokeDashoffset: [0, -400] }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: 'linear' }}
+          />
+        </g>
+      )}
+
       <path d={OUTER_PATH} fill="none" stroke="rgba(205,168,107,0.55)" strokeWidth="2" strokeLinejoin="round" />
       <path d={INNER_PATH} fill="none" stroke="rgba(205,168,107,0.25)" strokeWidth="1" strokeLinejoin="round" />
 

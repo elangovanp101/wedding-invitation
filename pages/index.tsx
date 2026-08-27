@@ -86,7 +86,12 @@ const HomePage = () => {
         <Thoranam />
         <FairyLights />
         <Navigation />
-        <LanguageToggle />
+        <LanguageToggle
+          onSwitch={() => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            setShowTopFireworks(true);
+          }}
+        />
         <main>
           <HeroTitle />
           <Intro />

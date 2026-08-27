@@ -2,9 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import styles from './Hero.module.css';
 import PetalField from './PetalField';
-import SparkleFountain from './SparkleFountain';
-import EnvelopeReveal from './EnvelopeReveal';
-import CarCrashIntro, { CAR_CRASH_DURATION_MS } from './CarCrashIntro';
+import CarCrashIntro, { CRASH_INTRO_DURATION_MS } from './CarCrashIntro';
 import HandwrittenName from '../HandwrittenName/HandwrittenName';
 import { useLanguage } from '../../context/LanguageContext';
 import { useMusic } from '../../context/MusicContext';
@@ -20,21 +18,19 @@ export default function Hero({ onOpen }: Props) {
   const reduceMotion = useReducedMotion();
   const [heroLang, setHeroLang] = useState<'en' | 'ta'>('en');
   const [introDone, setIntroDone] = useState(false);
-  const [opening, setOpening] = useState(false);
   const openedRef = useRef(false);
 
   const handleOpen = useCallback(() => {
     if (openedRef.current) return;
     openedRef.current = true;
-    setOpening(true);
     // Retry in case the near-instant autoplay attempt on load was blocked — this click is a real gesture.
     music.start();
     onOpen();
   }, [music, onOpen]);
 
-  // Music starts the instant the cars collide and the heart pops — the earliest moment in the
-  // intro this can be attempted. If the browser blocks autoplay this early (no gesture yet), it's
-  // retried on "Open Invitation" click, and by MusicContext on any other first interaction with the page.
+  // Music starts the instant the cars collide — the earliest moment in the intro this can be
+  // attempted. If the browser blocks autoplay this early (no gesture yet), it's retried on
+  // "Open Invitation" click, and by MusicContext on any other first interaction with the page.
   const handleBang = useCallback(() => {
     music.start();
   }, [music]);
@@ -45,7 +41,7 @@ export default function Hero({ onOpen }: Props) {
       setIntroDone(true);
       return;
     }
-    const timer = setTimeout(() => setIntroDone(true), CAR_CRASH_DURATION_MS);
+    const timer = setTimeout(() => setIntroDone(true), CRASH_INTRO_DURATION_MS);
     return () => clearTimeout(timer);
   }, [reduceMotion]);
 
@@ -73,9 +69,6 @@ export default function Hero({ onOpen }: Props) {
         <>
       {/* Petals begin only once the real title is on screen — not during the car-crash intro. */}
       <PetalField count={16} />
-      {/* Cold-fire sparkler fountains flank the names until the guest opens the invitation. */}
-      <SparkleFountain side="left" />
-      <SparkleFountain side="right" />
       <div className={styles.metadata}>
         <motion.div
           className={styles.date}
@@ -168,8 +161,6 @@ export default function Hero({ onOpen }: Props) {
       >
         {t.invitation.hero.openInvitation}
       </motion.button>
-
-      {opening && <EnvelopeReveal />}
         </>
       )}
     </motion.div>

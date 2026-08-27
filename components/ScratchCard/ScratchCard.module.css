@@ -19,7 +19,6 @@
 .cardWrap {
   position: relative;
   width: min(90vw, 340px);
-  height: 190px;
   margin: 0 auto;
   border-radius: 14px;
   overflow: hidden;
@@ -28,36 +27,14 @@
 }
 
 .reveal {
-  position: absolute;
-  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
   background: linear-gradient(180deg, rgba(205, 168, 107, 0.14), rgba(14, 11, 9, 0.9));
 }
 
-.revealDate {
-  font-family: var(--font-serif);
-  font-size: 2rem;
-  color: var(--color-gold-soft);
-}
 
-.revealMonth {
-  font-family: var(--font-sans);
-  font-size: 0.7rem;
-  letter-spacing: 0.3em;
-  color: var(--color-gold);
-}
-
-.revealNote {
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-size: 0.95rem;
-  color: rgba(244, 234, 217, 0.75);
-  margin-top: 0.3rem;
-}
 
 .canvas {
   position: absolute;

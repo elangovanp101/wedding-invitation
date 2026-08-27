@@ -61,6 +61,31 @@ export default function Wishes() {
   const thankYouTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const showerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const tickerRef = useRef<HTMLDivElement | null>(null);
+  const pausedRef = useRef(false);
+
+  // Auto-scrolls the ticker via real scrollLeft (so the native horizontal scrollbar always
+  // reflects position and the guest can grab it to scroll manually), looping seamlessly since
+  // the wish list below is duplicated once.
+  useEffect(() => {
+    pausedRef.current = paused;
+  }, [paused]);
+
+  useEffect(() => {
+    let frame: number;
+    const step = () => {
+      const el = tickerRef.current;
+      if (el && !pausedRef.current) {
+        el.scrollLeft += 0.6;
+        if (el.scrollLeft >= el.scrollWidth / 2) {
+          el.scrollLeft = 0;
+        }
+      }
+      frame = requestAnimationFrame(step);
+    };
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, []);
 
   // Auto-grows the message box as the guest types, instead of a small fixed box with a scrollbar.
   useEffect(() => {
@@ -117,9 +142,11 @@ export default function Wishes() {
 
       {showerEmoji && <ReactionShower emoji={showerEmoji} />}
 
-      {/* Instagram-style ticker: small post chips drifting past, 2-3 visible at once. */}
+      {/* Instagram-style ticker: small post chips, scrollable by hand (visible scrollbar)
+          and gently auto-scrolling otherwise; 2-3 visible at once. */}
       <div
-        className={`${styles.tickerViewport} ${paused ? styles.tickerPaused : ''}`}
+        ref={tickerRef}
+        className={styles.tickerViewport}
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
         onTouchStart={() => setPaused(true)}

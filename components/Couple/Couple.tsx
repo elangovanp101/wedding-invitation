@@ -4,6 +4,32 @@ import ArchFrame from './ArchFrame';
 import { useLanguage } from '../../context/LanguageContext';
 import { weddingData } from '../../data/wedding';
 
+/** A laptop silhouette — engineering, shown rather than named (the gears now turn inside the arch). */
+function ComputerIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="5" width="16" height="10" rx="1" />
+      <path d="M2 19h20l-2-3H4Z" />
+      <path d="M9 15h6" />
+    </svg>
+  );
+}
+
+/** A microscope silhouette — medicine/research, shown rather than named. */
+function MicroscopeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M8 21h8" />
+      <path d="M12 21v-3.5" />
+      <path d="M7 17.5h10a1 1 0 0 0 1-1.2l-.6-3a1 1 0 0 0-1-.8H7.6a1 1 0 0 0-1 .8l-.6 3a1 1 0 0 0 1 1.2Z" />
+      <path d="M10 12.5V9a2 2 0 0 1 2-2h0" />
+      <path d="M12 3v2.2" />
+      <path d="M9.5 5.2h5" />
+      <circle cx="16.5" cy="9" r="1.1" fill="currentColor" stroke="none" />
+    </svg>
+  );
+}
+
 export default function Couple() {
   const { language, t } = useLanguage();
   const content = weddingData.couple[language === 'ta' ? 'tamil' : 'english'];
@@ -29,13 +55,10 @@ export default function Couple() {
           transition={{ duration: 1 }}
         >
           {/* PLACEHOLDER: swap this arch frame for Elangovan's portrait */}
-          <ArchFrame accent="#7c93b8" className={styles.archSvg} />
+          <ArchFrame accent="#7c93b8" decor="snow" className={styles.archSvg} />
           <span className={styles.monogram}>Elan</span>
           <span className={`${styles.iconBadge} ${styles.iconBadgeGroom}`} aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
-              <circle cx="12" cy="12" r="3.1" />
-              <path d="M12 3.5v2.6M12 17.9v2.6M3.5 12h2.6M17.9 12h2.6M6.1 6.1l1.8 1.8M16.1 16.1l1.8 1.8M6.1 17.9l1.8-1.8M16.1 7.9l1.8-1.8" />
-            </svg>
+            <ComputerIcon />
           </span>
         </motion.figure>
 
@@ -72,15 +95,10 @@ export default function Couple() {
           transition={{ duration: 1 }}
         >
           {/* PLACEHOLDER: swap this arch frame for Selvaveena's portrait */}
-          <ArchFrame accent="#b9515f" className={styles.archSvg} />
+          <ArchFrame accent="#b9515f" decor="ecg" className={styles.archSvg} />
           <span className={styles.monogram}>Veena</span>
           <span className={`${styles.iconBadge} ${styles.iconBadgeBride}`} aria-hidden="true">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
-              <path d="M7.5 3v6a4.5 4.5 0 0 0 9 0V3" />
-              <circle cx="18.7" cy="14.5" r="2.2" />
-              <circle cx="7.5" cy="2.6" r="1" />
-              <circle cx="12" cy="2.6" r="1" />
-            </svg>
+            <MicroscopeIcon />
           </span>
         </motion.figure>
       </div>

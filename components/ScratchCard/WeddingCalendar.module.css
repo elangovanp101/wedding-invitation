@@ -1,0 +1,71 @@
+.calendar {
+    padding: 1.25rem 1.1rem 1.5rem;
+}
+
+.month {
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    letter-spacing: 0.28em;
+    color: var(--color-gold);
+    margin-bottom: 0.9rem;
+    text-align: center;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    row-gap: 0.5rem;
+    place-items: center;
+}
+
+.weekday {
+    font-family: var(--font-sans);
+    font-size: 0.62rem;
+    letter-spacing: 0.08em;
+    color: rgba(244, 234, 217, 0.45);
+}
+
+.day {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.dayNumber {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-serif);
+    font-size: 0.85rem;
+    color: rgba(244, 234, 217, 0.75);
+}
+
+.dayWedding .dayNumber {
+    color: #fff6e6;
+    font-weight: 600;
+    transform: translateY(-1px);
+}
+
+/* The heart is drawn AROUND the date, not below it, so the number stays fully readable. */
+.heartShape {
+    position: absolute;
+    inset: -4px;
+    width: calc(100% + 8px);
+    height: calc(100% + 8px);
+}
+
+.heartShape path {
+    fill: url(#heartCalendarGradient);
+}
+
+.note {
+    margin-top: 1.1rem;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.9rem;
+    color: rgba(244, 234, 217, 0.7);
+    text-align: center;
+}
+

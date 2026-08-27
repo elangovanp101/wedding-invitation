@@ -1,0 +1,34 @@
+.tunnel {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 36vh;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.wire {
+  fill: none;
+  stroke: rgba(205, 168, 107, 0.35);
+  stroke-width: 0.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.bulb {
+  fill: #e5c88e;
+  filter: drop-shadow(0 0 1.5px rgba(229, 200, 142, 0.9));
+  animation: bulbGlow 2.6s ease-in-out infinite;
+}
+
+@keyframes bulbGlow {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bulb {
+    animation: none;
+    opacity: 0.8;
+  }
+}
