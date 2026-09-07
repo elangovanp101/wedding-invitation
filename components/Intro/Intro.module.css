@@ -19,6 +19,12 @@
     color: var(--color-gold);
 }
 
+.coupleGif {
+    width: clamp(120px, 24vw, 180px);
+    height: auto;
+    display: block;
+}
+
 .details {
     font-family: var(--font-serif);
     font-size: clamp(1.25rem, 3vw, 1.85rem);

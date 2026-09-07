@@ -68,8 +68,8 @@ export default function CarCrashIntro({ onBang }: { onBang?: () => void }) {
 
       <motion.div
         className={`${styles.car} ${styles.carLeft}`}
-        initial={{ x: '-70vw', opacity: 0.9 }}
-        animate={{ x: '-6vw' }}
+        initial={{ x: 'calc(-50% - 70vw)', opacity: 0.9 }}
+        animate={{ x: 'calc(-50% - 6vw)' }}
         transition={{ duration: IMPACT_T, ease: [0.6, 0, 0.85, 0] }}
       >
         <CarSilhouette />
@@ -77,8 +77,8 @@ export default function CarCrashIntro({ onBang }: { onBang?: () => void }) {
 
       <motion.div
         className={`${styles.car} ${styles.carRight}`}
-        initial={{ x: '70vw', opacity: 0.9 }}
-        animate={{ x: '6vw' }}
+        initial={{ x: 'calc(-50% + 70vw)', opacity: 0.9 }}
+        animate={{ x: 'calc(-50% + 6vw)' }}
         transition={{ duration: IMPACT_T, ease: [0.6, 0, 0.85, 0] }}
       >
         <CarSilhouette flipped />
@@ -100,16 +100,18 @@ export default function CarCrashIntro({ onBang }: { onBang?: () => void }) {
         ♥
       </motion.span>
 
-      <motion.div
-        className={styles.invitationPopup}
-        initial={{ opacity: 0, scale: 0.92, y: 10 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ delay: TITLE_IN_T, duration: TITLE_FADE_DURATION, ease: [0.25, 1, 0.5, 1] }}
-      >
-        <span className={styles.invitationLine} />
-        <span className={styles.invitationText}>Wedding Invitation</span>
-        <span className={styles.invitationLine} />
-      </motion.div>
+      <div className={styles.invitationPopup}>
+        <motion.div
+          className={styles.invitationInner}
+          initial={{ opacity: 0, scale: 0.92, y: 10 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ delay: TITLE_IN_T, duration: TITLE_FADE_DURATION, ease: [0.25, 1, 0.5, 1] }}
+        >
+          <span className={styles.invitationLine} />
+          <span className={styles.invitationText}>Wedding Invitation</span>
+          <span className={styles.invitationLine} />
+        </motion.div>
+      </div>
     </motion.div>
   );
 }

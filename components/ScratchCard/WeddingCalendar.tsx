@@ -52,7 +52,7 @@ export default function WeddingCalendar() {
           );
         })}
       </div>
-      <p className={styles.note}>See you there ✦</p>
+      <p className={styles.note}>More details below ✦</p>
     </motion.div>
   );
 }

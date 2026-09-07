@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import styles from './Intro.module.css';
-import RunningFigures from './RunningFigures';
 import { useLanguage } from '../../context/LanguageContext';
 
 export default function Intro() {
@@ -9,7 +8,7 @@ export default function Intro() {
 
   return (
     <section className={styles.intro}>
-      <RunningFigures />
+      <img src="/images/couples.gif" alt="" className={styles.coupleGif} />
       <motion.span
         className={styles.kicker}
         initial={{ opacity: 0, y: 16 }}

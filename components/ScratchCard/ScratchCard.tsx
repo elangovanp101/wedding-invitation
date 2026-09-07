@@ -4,7 +4,7 @@ import styles from './ScratchCard.module.css';
 import Fireworks from '../Fireworks/Fireworks';
 import WeddingCalendar from './WeddingCalendar';
 
-const REVEAL_THRESHOLD = 0.45;
+const REVEAL_THRESHOLD = 0.2;
 const CONFETTI_COLORS = ['#cda86b', '#e8d3a4', '#8f2a3a', '#f4ead9', '#5c7d6b'];
 
 function ConfettiBurst({ onDone }: { onDone: () => void }) {

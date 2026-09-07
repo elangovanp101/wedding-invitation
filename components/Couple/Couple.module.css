@@ -75,6 +75,13 @@
     height: 17px;
 }
 
+.iconBadge img {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    border-radius: 50%;
+}
+
 .iconBadgeGroom {
     color: #9db2d6;
 }

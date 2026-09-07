@@ -19,50 +19,10 @@ const SNOWFLAKES = [
 
 const ECG_PATH = 'M28,175 L52,175 L62,148 L76,198 L88,160 L98,175 L172,175';
 
-/** Two meshing gears, turning in opposite directions — engineering, shown at roughly the same
- * placement inside the arch as the ECG trace for the bride's side. Each gear rotates around its
- * own local (0,0) via a translate wrapper — more reliable across browsers than relying on
- * CSS transform-origin on an SVG <g>. */
-function Gear({ cx, cy, r, accent, direction, duration }: { cx: number; cy: number; r: number; accent: string; direction: 1 | -1; duration: number }) {
-  return (
-    <g transform={`translate(${cx}, ${cy})`}>
-      <motion.g
-        animate={{ rotate: direction * 360 }}
-        transition={{ duration, repeat: Infinity, ease: 'linear' }}
-      >
-        {gearTeeth(0, 0, r, 10)}
-        <circle r={r} fill="none" stroke={accent} strokeWidth="2" />
-        <circle r={r * 0.28} fill="none" stroke={accent} strokeWidth="1.6" />
-      </motion.g>
-    </g>
-  );
-}
-
-function GearMotif({ accent }: { accent: string }) {
-  return (
-    <g>
-      <Gear cx={84} cy={190} r={16} accent="rgba(205,168,107,0.55)" direction={1} duration={9} />
-      <Gear cx={120} cy={168} r={10} accent={accent} direction={-1} duration={6.5} />
-    </g>
-  );
-}
-
-function gearTeeth(cx: number, cy: number, r: number, count: number) {
-  return Array.from({ length: count }, (_, i) => {
-    const rad = ((360 / count) * i * Math.PI) / 180;
-    return (
-      <line
-        key={i}
-        x1={cx + Math.cos(rad) * r}
-        y1={cy + Math.sin(rad) * r}
-        x2={cx + Math.cos(rad) * (r + 5)}
-        y2={cy + Math.sin(rad) * (r + 5)}
-        stroke="rgba(205,168,107,0.5)"
-        strokeWidth="2.2"
-        strokeLinecap="round"
-      />
-    );
-  });
+/** Real animated gear illustration (public/images/gear.gif), shown at roughly the same
+ * placement inside the arch as the ECG trace for the bride's side. */
+function GearMotif() {
+  return <image href="/images/gear.gif" x={54} y={144} width={92} height={92} preserveAspectRatio="xMidYMid meet" />;
 }
 
 /** Decorative palace-arch niche frame, standing in for a portrait until real photography arrives.
@@ -81,7 +41,7 @@ export default function ArchFrame({ accent, className, decor }: ArchFrameProps) 
 
       {decor === 'snow' && (
         <g clipPath={`url(#arch-clip-${uid})`}>
-          <GearMotif accent={accent} />
+          <GearMotif />
           {SNOWFLAKES.map((s, i) => (
             <motion.text
               key={i}
