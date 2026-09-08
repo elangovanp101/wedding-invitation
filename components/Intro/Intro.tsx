@@ -8,7 +8,7 @@ export default function Intro() {
 
   return (
     <section className={styles.intro}>
-      <img src="/images/couples.gif" alt="" className={styles.coupleGif} />
+      <img src="/images/couples.png" alt="" className={styles.coupleGif} />
       <motion.span
         className={styles.kicker}
         initial={{ opacity: 0, y: 16 }}

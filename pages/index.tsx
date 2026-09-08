@@ -10,6 +10,7 @@ import LanguageToggle from '../components/LanguageToggle/LanguageToggle';
 import MusicController from '../components/MusicController/MusicController';
 import Thoranam from '../components/Thoranam/Thoranam';
 import FairyLights from '../components/Thoranam/FairyLights';
+import BackFlash from '../components/BackFlash/BackFlash';
 import Countdown from '../components/Countdown/Countdown';
 import Intro from '../components/Intro/Intro';
 import ScratchCard from '../components/ScratchCard/ScratchCard';
@@ -94,6 +95,7 @@ const HomePage = ({ forcedLanguage, guestName }: { forcedLanguage?: Language; gu
 
       <div className={`pageGate ${isOpened ? 'pageGate--revealed' : 'pageGate--hidden'}`}>
         <Thoranam />
+        <BackFlash />
         <FairyLights />
         <Navigation />
         <LanguageToggle

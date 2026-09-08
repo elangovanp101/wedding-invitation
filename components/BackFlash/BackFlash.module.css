@@ -1,0 +1,14 @@
+.layer {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.stamp {
+    position: absolute;
+    height: auto;
+    mix-blend-mode: soft-light;
+    filter: drop-shadow(0 0 18px rgba(205, 168, 107, 0.25));
+}
