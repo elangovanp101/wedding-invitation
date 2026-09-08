@@ -88,8 +88,22 @@
 .showerPiece {
     position: absolute;
     top: 0;
-    font-size: 1.6rem;
+    border-radius: 1px;
     filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+.showerGlyph {
+    position: absolute;
+    top: 0;
+    line-height: 1;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+}
+
+.glyphHeart {
+    background: linear-gradient(160deg, #e5949e 0%, #b8465a 50%, #8f2a3a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
 }
 
 /* Instagram-style horizontal ticker: a real scrollable strip with a visible, styled scrollbar
@@ -330,4 +344,11 @@
     font-family: var(--font-sans);
     font-size: 0.65rem;
     color: rgba(244, 234, 217, 0.45);
+}
+
+.submitError {
+    align-self: center;
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: #e5949e;
 }

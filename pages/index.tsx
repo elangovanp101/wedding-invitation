@@ -19,14 +19,23 @@ import Venue from '../components/Venue/Venue';
 import Wishes from '../components/Wishes/Wishes';
 import RSVP from '../components/RSVP/RSVP';
 import Footer from '../components/Footer/Footer';
+import { useLanguage } from '../context/LanguageContext';
+import type { Language } from '../data/translations';
 
-const HomePage = () => {
+const HomePage = ({ forcedLanguage, guestName }: { forcedLanguage?: Language; guestName?: string } = {}) => {
+  const { setLanguage } = useLanguage();
   const [isOpened, setIsOpened] = useState(false);
   const [showBurst, setShowBurst] = useState(false);
   const [showFireworks, setShowFireworks] = useState(false);
   const [showTopFireworks, setShowTopFireworks] = useState(false);
   const [dateRevealed, setDateRevealed] = useState(false);
   const wasAtTopRef = useRef(true);
+
+  // Lets a dedicated route (e.g. /tamil) open straight into that language, so it can be
+  // shared directly instead of asking every guest to toggle it themselves.
+  useEffect(() => {
+    if (forcedLanguage) setLanguage(forcedLanguage);
+  }, [forcedLanguage, setLanguage]);
 
   // Prevent scrolling behind the cinematic opening gate.
   useEffect(() => {
@@ -69,6 +78,7 @@ const HomePage = () => {
         {!isOpened && (
           <Hero
             key="hero"
+            guestName={guestName}
             onOpen={() => {
               setIsOpened(true);
               setShowBurst(true);

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import styles from './Footer.module.css';
 import TunnelLights from './TunnelLights';
@@ -8,18 +8,21 @@ import { weddingData } from '../../data/wedding';
 const SHARE_TITLE = 'Elangovan ♥ Selvaveena — Wedding Invitation';
 const SHARE_TEXT = 'Join Elangovan & Selvaveena as they celebrate their wedding in Bangalore!';
 
-function currentUrl() {
-  return typeof window !== 'undefined' ? window.location.href : '';
-}
-
 /** Doubles as the site's final emotional closing section. */
 export default function Footer() {
   const { t } = useLanguage();
   const copy = t.invitation.footer;
   const [copied, setCopied] = useState(false);
+  // Starts empty so server and first client render match exactly, then fills in post-mount —
+  // reading window.location during render itself caused a hydration mismatch.
+  const [pageUrl, setPageUrl] = useState('');
+
+  useEffect(() => {
+    setPageUrl(window.location.href);
+  }, []);
 
   const handleNativeShare = async () => {
-    const url = currentUrl();
+    const url = pageUrl;
     if (typeof navigator !== 'undefined' && navigator.share) {
       try {
         await navigator.share({ title: SHARE_TITLE, text: SHARE_TEXT, url });
@@ -74,7 +77,7 @@ export default function Footer() {
         <div className={styles.shareButtons}>
           <a
             className={styles.shareButton}
-            href={`https://wa.me/?text=${encodeURIComponent(`${SHARE_TEXT} ${currentUrl()}`)}`}
+            href={`https://wa.me/?text=${encodeURIComponent(`${SHARE_TEXT} ${pageUrl}`)}`}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Share on WhatsApp"
@@ -83,7 +86,7 @@ export default function Footer() {
           </a>
           <a
             className={styles.shareButton}
-            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl())}`}
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Share on Facebook"

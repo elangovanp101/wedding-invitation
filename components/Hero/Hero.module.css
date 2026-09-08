@@ -113,6 +113,13 @@
   color: rgba(244, 234, 217, 0.85);
 }
 
+.guestGreeting {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: clamp(1.1rem, 2.4vw, 1.4rem);
+  color: var(--color-gold);
+}
+
 .openButton {
   position: relative;
   z-index: 3;

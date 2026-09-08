@@ -41,7 +41,9 @@ export function icsDataUrl(event: CalendarEvent) {
     'PRODID:-//Elangovan and Selvaveena//Wedding//EN',
     'BEGIN:VEVENT',
     `UID:${event.title.replace(/\s+/g, '-')}-${event.start}@elanveena.einweit.com`,
-    `DTSTAMP:${toUtcCompact(new Date().toISOString())}`,
+    // A fixed, deterministic stamp (not "now") — using the real render time here caused a
+    // server/client hydration mismatch, since it differs by definition between the two passes.
+    `DTSTAMP:${toUtcCompact(event.start)}`,
     `DTSTART:${toUtcCompact(event.start)}`,
     `DTEND:${toUtcCompact(event.end)}`,
     `SUMMARY:${event.title}`,

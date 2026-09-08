@@ -10,9 +10,9 @@ import { useMusic } from '../../context/MusicContext';
 const LANG_LOOP_MS = 3800;
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-type Props = { onOpen: () => void };
+type Props = { onOpen: () => void; guestName?: string };
 
-export default function Hero({ onOpen }: Props) {
+export default function Hero({ onOpen, guestName }: Props) {
   const { t } = useLanguage();
   const music = useMusic();
   const reduceMotion = useReducedMotion();
@@ -148,6 +148,7 @@ export default function Hero({ onOpen }: Props) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 2.1, duration: 1 }}
       >
+        {guestName ? <span className={styles.guestGreeting}>Dear {guestName},</span> : null}
         {t.invitation.hero.inviteText}
       </motion.p>
 

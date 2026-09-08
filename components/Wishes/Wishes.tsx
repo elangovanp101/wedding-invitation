@@ -1,48 +1,82 @@
 import { useState, useRef, useCallback, useEffect, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { collection, addDoc, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import styles from './Wishes.module.css';
 import { useLanguage } from '../../context/LanguageContext';
 import { weddingData } from '../../data/wedding';
+import { db } from '../../lib/firebase';
 
-const REACTIONS = ['♥', '🥰', '🎉', '🌸', '🌿'];
+const REACTIONS = ['♥', '🌸', '🎉', '🔥'];
 const ACCENTS = ['accentGold', 'accentRose', 'accentJasmine', 'accentSlate'];
+const CONFETTI_COLORS = ['#cda86b', '#e8d3a4', '#8f2a3a', '#f4ead9', '#5c7d6b', '#b9515f'];
 const MAX_MESSAGE_LENGTH = 160;
 const SHOWER_LIFETIME_MS = 2800;
 
+type ShowerType = 'heart' | 'flower' | 'confetti' | 'fire';
+
+// Each reaction rains down its own themed shower instead of confetti for everything.
+const SHOWER_TYPE: Record<string, ShowerType> = {
+  '♥': 'heart',
+  '🌸': 'flower',
+  '🎉': 'confetti',
+  '🔥': 'fire',
+};
+const SHOWER_GLYPH: Record<Exclude<ShowerType, 'confetti'>, string> = {
+  heart: '♥',
+  flower: '🌸',
+  fire: '🔥',
+};
+
 type Wish = { name: string; message: string; reaction: string };
-type ShowerPiece = { id: number; left: number; delay: number; duration: number; drift: number; rotate: number };
+type ShowerPiece = { id: number; left: number; delay: number; duration: number; drift: number; rotate: number; color: string; size: number };
 
 function initial(name: string) {
   return name.trim().charAt(0).toUpperCase() || '✦';
 }
 
-/** Full-page shower of the tapped reaction, falling from the sky for a few seconds. */
-function ReactionShower({ emoji }: { emoji: string }) {
+/** Full-page shower themed to the reaction that was tapped — confetti paper for the party
+ * popper, falling glyphs (heart/flower/fire) for the rest. Each tap spawns an independent
+ * instance (keyed by id in the parent) so rapid clicks stack instead of one click's animation
+ * silently overwriting the last. */
+function ReactionShower({ type }: { type: ShowerType }) {
   const pieces = useRef<ShowerPiece[]>(
-    Array.from({ length: 34 }, (_, i) => ({
+    Array.from({ length: 30 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
       delay: Math.random() * 0.6,
       duration: 2.2 + Math.random() * 1.4,
       drift: (Math.random() - 0.5) * 60,
       rotate: (Math.random() - 0.5) * 240,
+      color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+      size: type === 'confetti' ? 6 + Math.random() * 8 : 14 + Math.random() * 14,
     }))
   ).current;
 
   return (
     <div className={styles.shower} aria-hidden="true">
-      {pieces.map((p) => (
-        <motion.span
-          key={p.id}
-          className={styles.showerPiece}
-          style={{ left: `${p.left}%` }}
-          initial={{ y: '-10vh', opacity: 0, rotate: 0 }}
-          animate={{ y: '110vh', x: [0, p.drift], opacity: [0, 1, 1, 0], rotate: p.rotate }}
-          transition={{ duration: p.duration, delay: p.delay, ease: 'easeIn' }}
-        >
-          {emoji}
-        </motion.span>
-      ))}
+      {pieces.map((p) =>
+        type === 'confetti' ? (
+          <motion.span
+            key={p.id}
+            className={styles.showerPiece}
+            style={{ left: `${p.left}%`, width: p.size, height: p.size * 0.42, background: p.color }}
+            initial={{ y: '-10vh', opacity: 0, rotate: 0 }}
+            animate={{ y: '110vh', x: [0, p.drift], opacity: [0, 1, 1, 0], rotate: p.rotate }}
+            transition={{ duration: p.duration, delay: p.delay, ease: 'easeIn' }}
+          />
+        ) : (
+          <motion.span
+            key={p.id}
+            className={`${styles.showerGlyph} ${type === 'heart' ? styles.glyphHeart : ''}`}
+            style={{ left: `${p.left}%`, fontSize: p.size }}
+            initial={{ y: '-10vh', opacity: 0, rotate: 0 }}
+            animate={{ y: '110vh', x: [0, p.drift], opacity: [0, 1, 1, 0], rotate: p.rotate }}
+            transition={{ duration: p.duration, delay: p.delay, ease: 'easeIn' }}
+          >
+            {SHOWER_GLYPH[type as Exclude<ShowerType, 'confetti'>]}
+          </motion.span>
+        )
+      )}
     </div>
   );
 }
@@ -55,11 +89,13 @@ export default function Wishes() {
   const [message, setMessage] = useState('');
   const [reaction, setReaction] = useState(REACTIONS[0]);
   const [counts, setCounts] = useState<Record<string, number>>({});
-  const [showerEmoji, setShowerEmoji] = useState<string | null>(null);
+  const [bursts, setBursts] = useState<{ id: number; type: ShowerType }[]>([]);
   const [thankYouName, setThankYouName] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const thankYouTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const showerTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const burstIdRef = useRef(0);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const tickerRef = useRef<HTMLDivElement | null>(null);
   const pausedRef = useRef(false);
@@ -95,24 +131,55 @@ export default function Wishes() {
     el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
   }, [message]);
 
-  // Fills the sky with the tapped reaction for a few seconds — replaces the old localized burst.
+  // Fills the sky with a shower themed to the tapped reaction, for a few seconds — each click
+  // spawns its own independent burst (by id) so clicking twice fast stacks two showers instead
+  // of one silently replacing the other.
   const handleReact = useCallback((emoji: string) => {
     setCounts((prev) => ({ ...prev, [emoji]: (prev[emoji] ?? 0) + 1 }));
-    setShowerEmoji(emoji);
-    if (showerTimerRef.current) clearTimeout(showerTimerRef.current);
-    showerTimerRef.current = setTimeout(() => setShowerEmoji(null), SHOWER_LIFETIME_MS);
+    const id = burstIdRef.current++;
+    const type = SHOWER_TYPE[emoji] ?? 'confetti';
+    setBursts((prev) => [...prev, { id, type }]);
+    setTimeout(() => {
+      setBursts((prev) => prev.filter((b) => b.id !== id));
+    }, SHOWER_LIFETIME_MS);
   }, []);
 
-  // NOTE: front-end only for now — connect to a real backend/API before going live.
-  const handleSubmit = (e: FormEvent) => {
+  // Live-syncs the wish list from Firestore once db/wedding.ts is configured with real keys —
+  // until then `db` is null and the page just keeps showing the local seed wishes below.
+  useEffect(() => {
+    if (!db) return;
+    const q = query(collection(db, 'wishes'), orderBy('createdAt', 'desc'));
+    return onSnapshot(q, (snapshot) => {
+      setWishes(snapshot.docs.map((doc) => doc.data() as Wish));
+    });
+  }, []);
+
+  // NOTE: writes to Firestore once configured; otherwise falls back to local-only state so the
+  // form still works (wishes just won't persist or be visible to other guests) before Firebase
+  // is set up.
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !message.trim()) return;
-    setWishes((prev) => [{ name, message: message.slice(0, MAX_MESSAGE_LENGTH), reaction }, ...prev]);
-    setThankYouName(name);
-    setName('');
-    setMessage('');
-    if (thankYouTimerRef.current) clearTimeout(thankYouTimerRef.current);
-    thankYouTimerRef.current = setTimeout(() => setThankYouName(null), 4200);
+    if (!name.trim() || !message.trim() || submitting) return;
+    const newWish: Wish = { name, message: message.slice(0, MAX_MESSAGE_LENGTH), reaction };
+    setSubmitting(true);
+    setSubmitError(null);
+    try {
+      if (db) {
+        await addDoc(collection(db, 'wishes'), { ...newWish, createdAt: serverTimestamp() });
+      } else {
+        setWishes((prev) => [newWish, ...prev]);
+      }
+      setThankYouName(name);
+      setName('');
+      setMessage('');
+      if (thankYouTimerRef.current) clearTimeout(thankYouTimerRef.current);
+      thankYouTimerRef.current = setTimeout(() => setThankYouName(null), 4200);
+    } catch (err) {
+      console.error('Failed to save wish:', err);
+      setSubmitError("Couldn't send that — please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   // Duplicated once so the CSS marquee loop is seamless — no scroll container involved,
@@ -140,7 +207,9 @@ export default function Wishes() {
         ))}
       </div>
 
-      {showerEmoji && <ReactionShower emoji={showerEmoji} />}
+      {bursts.map((b) => (
+        <ReactionShower key={b.id} type={b.type} />
+      ))}
 
       {/* Instagram-style ticker: small post chips, scrollable by hand (visible scrollbar)
           and gently auto-scrolling otherwise; 2-3 visible at once. */}
@@ -240,7 +309,7 @@ export default function Wishes() {
                 type="submit"
                 className={styles.sendButton}
                 aria-label={copy.submit}
-                disabled={!name.trim() || !message.trim()}
+                disabled={!name.trim() || !message.trim() || submitting}
               >
                 ➤
               </button>
@@ -248,6 +317,7 @@ export default function Wishes() {
             <span className={styles.charCount}>
               {message.length}/{MAX_MESSAGE_LENGTH}
             </span>
+            {submitError ? <span className={styles.submitError}>{submitError}</span> : null}
           </motion.form>
         )}
       </AnimatePresence>

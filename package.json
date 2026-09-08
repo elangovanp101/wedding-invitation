@@ -10,6 +10,7 @@
     "lint": "eslint ."
   },
   "dependencies": {
+    "firebase": "^12.18.0",
     "framer-motion": "^11.15.0",
     "next": "latest",
     "react": "latest",
