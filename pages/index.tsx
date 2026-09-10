@@ -18,6 +18,7 @@ import Couple from '../components/Couple/Couple';
 import EventTimeline from '../components/EventTimeline/EventTimeline';
 import Venue from '../components/Venue/Venue';
 import Wishes from '../components/Wishes/Wishes';
+import SongRequest from '../components/SongRequest/SongRequest';
 import RSVP from '../components/RSVP/RSVP';
 import Footer from '../components/Footer/Footer';
 import { useLanguage } from '../context/LanguageContext';
@@ -127,6 +128,7 @@ const HomePage = ({ forcedLanguage, guestName }: { forcedLanguage?: Language; gu
           <EventTimeline />
           <Venue />
           <Wishes />
+          <SongRequest />
           <RSVP />
         </main>
         <Footer />

@@ -60,6 +60,16 @@ export const translations = {
         title: "Gallery",
         subtitle: "Our Moments",
       },
+      songRequest: {
+        title: "Set the Playlist",
+        subtitle: "Which artist's songs do you want to hear more of on the dance floor?",
+        milestonePrefix: "You're fan",
+        milestoneMid: "of",
+        suggestLabel: "Don't see your favorite artist? Suggest one:",
+        suggestPlaceholder: "Artist name",
+        suggestSubmit: "Suggest",
+        suggestThanks: "Thanks! We'll consider it 🎶",
+      },
       wishes: {
         title: "Wished with Love",
         subtitle: "Words from family and friends",
@@ -140,6 +150,16 @@ export const translations = {
       gallery: {
         title: "கேலரி",
         subtitle: "நாங்கள் உருவாக்கப் போகும் தருணங்கள்",
+      },
+      songRequest: {
+        title: "இசை பட்டியல்",
+        subtitle: "ந௃த்திய மேடையில் நீங்கள் ஏது கலைஞரின் பாட்களை கேட்க விரும்புகிறீர்கள்?",
+        milestonePrefix: "நீங்கள்",
+        milestoneMid: "இன் ரசிகர்",
+        suggestLabel: "உங்கள் இஷ்ட கலைஞரை காணவில்லையா? ஒன்றை பரிந்துரைக்கவும்:",
+        suggestPlaceholder: "கலைஞரின் பெயர்",
+        suggestSubmit: "பரிந்துரை",
+        suggestThanks: "நன்றி! நாங்கள் பரிசீலிப்போம் 🎶",
       },
       wishes: {
         title: "சிறிய காதல்",

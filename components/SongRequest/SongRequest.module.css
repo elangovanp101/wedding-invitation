@@ -1,0 +1,217 @@
+.section {
+    position: relative;
+    padding: clamp(2.5rem, 8vh, 4.5rem) 6vw;
+    max-width: 60rem;
+    margin: 0 auto;
+    text-align: center;
+    overflow: hidden;
+    border-radius: 24px;
+    background: radial-gradient(120% 100% at 50% 0%, rgba(205, 168, 107, 0.08), transparent 60%),
+        radial-gradient(100% 80% at 50% 100%, rgba(185, 81, 95, 0.06), transparent 65%);
+}
+
+.equalizer {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: min(90%, 640px);
+    height: 90px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 0.4rem;
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.eqBar {
+    flex: 1;
+    height: 100%;
+    transform-origin: bottom;
+    background: linear-gradient(180deg, var(--color-gold) 0%, rgba(205, 168, 107, 0.2) 100%);
+    border-radius: 3px 3px 0 0;
+}
+
+.notesLayer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.note {
+    position: absolute;
+    bottom: 0;
+    font-size: 1.2rem;
+    color: rgba(205, 168, 107, 0.35);
+}
+
+.title {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: var(--color-gold-soft);
+}
+
+.subtitle {
+    position: relative;
+    z-index: 1;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: rgba(244, 234, 217, 0.65);
+    margin: 0.75rem 0 2.5rem;
+    max-width: 34rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.85rem;
+}
+
+.artistCard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1.25rem 0.75rem 1rem;
+    border: 1px solid rgba(205, 168, 107, 0.35);
+    border-radius: 14px;
+    background: rgba(17, 13, 10, 0.55);
+    backdrop-filter: blur(2px);
+    cursor: pointer;
+    transition: background 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+}
+
+.artistCard:hover:not(:disabled) {
+    background: rgba(205, 168, 107, 0.12);
+    transform: translateY(-2px);
+}
+
+.artistCard:disabled {
+    cursor: default;
+}
+
+.artistPicked {
+    border-color: var(--color-gold);
+    box-shadow: 0 0 0 1px rgba(205, 168, 107, 0.5), 0 8px 20px rgba(0, 0, 0, 0.35);
+}
+
+.crown {
+    position: absolute;
+    top: -12px;
+    right: -6px;
+    font-size: 1.1rem;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+}
+
+.artistName {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    color: var(--color-ivory);
+}
+
+.pctTrack {
+    width: 100%;
+    height: 5px;
+    border-radius: 999px;
+    background: rgba(244, 234, 217, 0.12);
+    overflow: hidden;
+}
+
+.pctFill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #8f2a3a, var(--color-gold));
+}
+
+.pctNumber {
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    color: var(--color-gold);
+}
+
+.milestone {
+    position: relative;
+    z-index: 1;
+    margin-top: 1.75rem;
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    color: rgba(244, 234, 217, 0.85);
+}
+
+.suggestForm {
+    position: relative;
+    z-index: 1;
+    margin-top: 2.25rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(205, 168, 107, 0.2);
+}
+
+.suggestLabel {
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    color: rgba(244, 234, 217, 0.55);
+    margin-bottom: 0.75rem;
+}
+
+.suggestRow {
+    display: flex;
+    gap: 0.6rem;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.suggestInput {
+    padding: 0.6rem 1rem;
+    min-width: 220px;
+    border: 1px solid rgba(205, 168, 107, 0.35);
+    border-radius: 999px;
+    background: rgba(244, 234, 217, 0.04);
+    color: var(--color-ivory);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+}
+
+.suggestInput::placeholder {
+    color: rgba(244, 234, 217, 0.4);
+}
+
+.suggestButton {
+    padding: 0.6rem 1.4rem;
+    border: 1px solid var(--color-gold);
+    border-radius: 999px;
+    background: rgba(205, 168, 107, 0.12);
+    color: var(--color-gold-soft);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.suggestButton:hover:not(:disabled) {
+    background: var(--color-gold);
+    color: #17110a;
+}
+
+.suggestButton:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+
+.suggestThanks {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: var(--color-gold-soft);
+}
