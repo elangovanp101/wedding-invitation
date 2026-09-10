@@ -23,20 +23,6 @@
   display: block;
 }
 
-.flash {
-  position: absolute;
-  z-index: 2;
-  left: 50%;
-  bottom: 16%;
-  transform: translateX(-50%);
-  width: 30vw;
-  height: 30vw;
-  max-width: 220px;
-  max-height: 220px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 245, 225, 0.95) 0%, rgba(205, 168, 107, 0.5) 45%, transparent 75%);
-}
-
 .heart {
   position: absolute;
   z-index: 2;

@@ -1,11 +1,16 @@
-import { useEffect } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import styles from './CarCrashIntro.module.css';
 import HeroTunnelLights from './HeroTunnelLights';
 
-// Simple timeline: two cars race in and stop side by side with a clear gap between them, a
+// useLayoutEffect warns during SSR (no DOM to measure yet) but is exactly what we want on the
+// client — it fires before the browser paints, so the real, viewport-based offsets are in place
+// before anything is visible, with no wrong frame and no server/client hydration mismatch.
+const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
+
+// Simple timeline: two cars race in fast and stop side by side with a clear gap between them, a
 // tunnel of fairy lights glows to life immediately, a heart pops out, then the invitation appears.
-const IMPACT_T = 1.4;
+const IMPACT_T = 0.9;
 const TUNNEL_IN_T = IMPACT_T; // lights begin the instant the cars stop
 const HEART_IN_T = IMPACT_T + 0.3;
 const TITLE_IN_T = TUNNEL_IN_T + 1.4;
@@ -35,6 +40,15 @@ function CarSilhouette({ flipped }: { flipped?: boolean }) {
 /** Two cars race in and collide; a heart pops out as the "byproduct" — then the names begin. */
 export default function CarCrashIntro({ onBang }: { onBang?: () => void }) {
   const reduceMotion = useReducedMotion();
+  // Same fixed default on server and first client render (no hydration mismatch), then updated
+  // to the real viewport-based offsets in useIsomorphicLayoutEffect below — before paint, so the
+  // guest never sees the placeholder frame and Framer never has to retarget mid-animation.
+  const [carOffsets, setCarOffsets] = useState({ start: 800, gap: 70 });
+
+  useIsomorphicLayoutEffect(() => {
+    const vw = window.innerWidth;
+    setCarOffsets({ start: vw * 0.8, gap: Math.max(48, Math.min(90, vw * 0.08)) });
+  }, []);
 
   // Tells Hero the fairy-light tunnel has begun glowing, so music starts right with it — the
   // earliest moment autoplay could ever succeed (still needs a prior gesture per browser
@@ -65,8 +79,8 @@ export default function CarCrashIntro({ onBang }: { onBang?: () => void }) {
 
       <motion.div
         className={`${styles.car} ${styles.carLeft}`}
-        initial={{ x: 'calc(-50% - 70vw)', opacity: 0.9 }}
-        animate={{ x: 'calc(-50% - clamp(48px, 8vw, 90px))' }}
+        initial={{ x: `calc(-50% - ${carOffsets.start}px)`, opacity: 0.9 }}
+        animate={{ x: `calc(-50% - ${carOffsets.gap}px)` }}
         transition={{ duration: IMPACT_T, ease: [0.22, 1, 0.36, 1] }}
       >
         <CarSilhouette />
@@ -74,19 +88,12 @@ export default function CarCrashIntro({ onBang }: { onBang?: () => void }) {
 
       <motion.div
         className={`${styles.car} ${styles.carRight}`}
-        initial={{ x: 'calc(-50% + 70vw)', opacity: 0.9 }}
-        animate={{ x: 'calc(-50% + clamp(48px, 8vw, 90px))' }}
+        initial={{ x: `calc(-50% + ${carOffsets.start}px)`, opacity: 0.9 }}
+        animate={{ x: `calc(-50% + ${carOffsets.gap}px)` }}
         transition={{ duration: IMPACT_T, ease: [0.22, 1, 0.36, 1] }}
       >
         <CarSilhouette flipped />
       </motion.div>
-
-      <motion.div
-        className={styles.flash}
-        initial={{ opacity: 0, scale: 0.4 }}
-        animate={{ opacity: [0, 1, 0], scale: 1.6 }}
-        transition={{ duration: 0.35, delay: IMPACT_T }}
-      />
 
       <div className={styles.heart}>
         <motion.span

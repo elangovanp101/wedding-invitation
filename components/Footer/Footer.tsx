@@ -88,7 +88,7 @@ export default function Footer() {
         <div className={styles.shareButtons}>
           <a
             className={styles.shareButton}
-            href={`https://wa.me/?text=${encodeURIComponent(`${SHARE_TEXT} ${pageUrl}`)}`}
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent(`${SHARE_TEXT} ${pageUrl}`)}`}
             aria-label="Share on WhatsApp"
           >
             <img src="/icons/whatsapp.png" alt="" className={styles.shareIcon} />
