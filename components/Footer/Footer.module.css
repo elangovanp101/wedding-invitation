@@ -1,5 +1,5 @@
 .footer {
-    padding: clamp(4rem, 14vh, 8rem) 6vw clamp(2rem, 6vh, 3rem);
+    padding: clamp(2.5rem, 9vh, 5rem) 6vw clamp(1.5rem, 6vh, 3rem);
     text-align: center;
     border-top: 1px solid rgba(205, 168, 107, 0.15);
 }
@@ -92,20 +92,34 @@
 }
 
 .shareButton {
-    padding: 0.6rem 1.2rem;
-    font-family: var(--font-sans);
-    font-size: 0.72rem;
-    letter-spacing: 0.08em;
-    color: var(--color-gold-soft);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
     border: 1px solid rgba(205, 168, 107, 0.4);
-    border-radius: 999px;
+    border-radius: 50%;
     background: rgba(244, 234, 217, 0.03);
-    transition: background 0.3s ease, color 0.3s ease;
+    transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.shareIcon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
 }
 
 .shareButton:hover {
-    background: var(--color-gold);
-    color: #17110a;
+    background: rgba(205, 168, 107, 0.18);
+    transform: translateY(-2px);
+}
+
+.copiedNote {
+    display: block;
+    margin-top: 0.6rem;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    color: var(--color-gold-soft);
 }
 
 .bottomBar {
@@ -125,4 +139,9 @@
 
 .links a:hover {
     color: var(--color-gold);
+}
+
+.copyright {
+    font-size: 0.65rem;
+    color: rgba(244, 234, 217, 0.3);
 }

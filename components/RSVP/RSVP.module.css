@@ -1,5 +1,5 @@
 .section {
-    padding: clamp(4rem, 12vh, 7rem) 6vw;
+    padding: clamp(2.5rem, 8vh, 4.5rem) 6vw;
     max-width: 70rem;
     margin: 0 auto;
     text-align: center;

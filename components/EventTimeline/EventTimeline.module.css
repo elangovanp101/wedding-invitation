@@ -1,6 +1,6 @@
 /* filepath: /wedding-invitation/components/EventTimeline/EventTimeline.module.css */
 .section {
-    padding: clamp(3rem, 8vh, 5rem) 0;
+    padding: clamp(2rem, 6vh, 3.5rem) 0;
 }
 
 .sectionTitle {

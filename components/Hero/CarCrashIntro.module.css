@@ -43,6 +43,10 @@
   left: 50%;
   bottom: 20%;
   transform: translateX(-50%);
+}
+
+.heartInner {
+  display: block;
   font-size: clamp(2.4rem, 8vw, 4rem);
   background: linear-gradient(160deg, #b8465a 0%, #8f2a3a 50%, #4a121b 100%);
   -webkit-background-clip: text;

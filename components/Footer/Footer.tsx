@@ -41,6 +41,16 @@ export default function Footer() {
     }
   };
 
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(pageUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2200);
+    } catch {
+      /* clipboard unavailable — nothing more we can do silently */
+    }
+  };
+
   return (
     <footer className={styles.footer}>
       {/* Handwritten note, scroll-revealed like breath wiped across a mirror */}
@@ -70,8 +80,9 @@ export default function Footer() {
         <p className={styles.thankYou}>{copy.thankYou}</p>
       </motion.div>
 
-      {/* Share the invitation — WhatsApp/Facebook open a share dialog; the third button uses the
-          native share sheet on mobile, or copies the link on desktop. */}
+      {/* Share the invitation — WhatsApp/Facebook open a share dialog, Instagram opens the
+          native share sheet (Instagram has no direct web-share URL), and the link button
+          just copies the URL. */}
       <div className={styles.shareBar}>
         <span className={styles.shareLabel}>Share the joy</span>
         <div className={styles.shareButtons}>
@@ -82,7 +93,7 @@ export default function Footer() {
             rel="noopener noreferrer"
             aria-label="Share on WhatsApp"
           >
-            WhatsApp
+            <img src="/icons/whatsapp.png" alt="" className={styles.shareIcon} />
           </a>
           <a
             className={styles.shareButton}
@@ -91,12 +102,16 @@ export default function Footer() {
             rel="noopener noreferrer"
             aria-label="Share on Facebook"
           >
-            Facebook
+            <img src="/icons/fb.png" alt="" className={styles.shareIcon} />
           </a>
-          <button type="button" className={styles.shareButton} onClick={handleNativeShare}>
-            {copied ? 'Link copied ✦' : 'Copy link'}
+          <button type="button" className={styles.shareButton} onClick={handleNativeShare} aria-label="Share on Instagram">
+            <img src="/icons/instagram.png" alt="" className={styles.shareIcon} />
+          </button>
+          <button type="button" className={styles.shareButton} onClick={handleCopyLink} aria-label="Copy link">
+            <img src="/icons/link.png" alt="" className={styles.shareIcon} />
           </button>
         </div>
+        {copied ? <span className={styles.copiedNote}>Link copied ✦</span> : null}
       </div>
 
       <div className={styles.bottomBar}>
@@ -105,6 +120,7 @@ export default function Footer() {
           <a href="#wishes">{t.invitation.nav.wishes}</a>
           <a href="#rsvp">{t.invitation.nav.rsvp}</a>
         </div>
+        <p className={styles.copyright}>© Einweit Technologies Private Limited, Bangalore</p>
       </div>
     </footer>
   );

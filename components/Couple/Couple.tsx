@@ -29,7 +29,7 @@ export default function Couple() {
           transition={{ duration: 1 }}
         >
           {/* PLACEHOLDER: swap this arch frame for Elangovan's portrait */}
-          <ArchFrame accent="#7c93b8" decor="snow" className={styles.archSvg} />
+          <ArchFrame accent="#7c93b8" decor="code" className={styles.archSvg} />
           <span className={styles.monogram}>Elan</span>
           <span className={`${styles.iconBadge} ${styles.iconBadgeGroom}`} aria-hidden="true">
             <img src="/images/code.gif" alt="" />

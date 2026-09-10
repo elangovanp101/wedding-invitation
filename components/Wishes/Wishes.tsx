@@ -2,30 +2,34 @@ import { useState, useRef, useCallback, useEffect, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { collection, addDoc, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import styles from './Wishes.module.css';
+import lanternStyles from '../Fireworks/SkyLanterns.module.css';
 import { useLanguage } from '../../context/LanguageContext';
 import { weddingData } from '../../data/wedding';
 import { db } from '../../lib/firebase';
 
-const REACTIONS = ['♥', '🌸', '🎉', '🔥'];
+const REACTIONS = ['♥', '🌸', '🎉', '🏮'];
 const ACCENTS = ['accentGold', 'accentRose', 'accentJasmine', 'accentSlate'];
 const CONFETTI_COLORS = ['#cda86b', '#e8d3a4', '#8f2a3a', '#f4ead9', '#5c7d6b', '#b9515f'];
 const MAX_MESSAGE_LENGTH = 160;
 const SHOWER_LIFETIME_MS = 2800;
+const MAX_CONCURRENT_SHOWERS = 4;
+const REACT_COOLDOWN_MS = 500;
 
-type ShowerType = 'heart' | 'flower' | 'confetti' | 'fire';
+type ShowerType = 'heart' | 'flower' | 'confetti' | 'lantern';
 
 // Each reaction rains down its own themed shower instead of confetti for everything.
 const SHOWER_TYPE: Record<string, ShowerType> = {
   '♥': 'heart',
   '🌸': 'flower',
   '🎉': 'confetti',
-  '🔥': 'fire',
+  '🏮': 'lantern',
 };
-const SHOWER_GLYPH: Record<Exclude<ShowerType, 'confetti'>, string> = {
+const SHOWER_GLYPH: Record<'heart' | 'flower', string> = {
   heart: '♥',
   flower: '🌸',
-  fire: '🔥',
 };
+// Sky lanterns cycle through the same warm hue variants as the Fireworks show's SkyLanterns.
+const LANTERN_HUES = ['gold', 'rose', 'ivory'];
 
 type Wish = { name: string; message: string; reaction: string };
 type ShowerPiece = { id: number; left: number; delay: number; duration: number; drift: number; rotate: number; color: string; size: number };
@@ -43,8 +47,8 @@ function ReactionShower({ type }: { type: ShowerType }) {
     Array.from({ length: 30 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
-      delay: Math.random() * 0.6,
-      duration: 2.2 + Math.random() * 1.4,
+      delay: type === 'lantern' ? Math.random() * 1.6 : Math.random() * 0.6,
+      duration: type === 'lantern' ? 6 + Math.random() * 2.5 : 2.2 + Math.random() * 1.4,
       drift: (Math.random() - 0.5) * 60,
       rotate: (Math.random() - 0.5) * 240,
       color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
@@ -54,17 +58,39 @@ function ReactionShower({ type }: { type: ShowerType }) {
 
   return (
     <div className={styles.shower} aria-hidden="true">
-      {pieces.map((p) =>
-        type === 'confetti' ? (
-          <motion.span
-            key={p.id}
-            className={styles.showerPiece}
-            style={{ left: `${p.left}%`, width: p.size, height: p.size * 0.42, background: p.color }}
-            initial={{ y: '-10vh', opacity: 0, rotate: 0 }}
-            animate={{ y: '110vh', x: [0, p.drift], opacity: [0, 1, 1, 0], rotate: p.rotate }}
-            transition={{ duration: p.duration, delay: p.delay, ease: 'easeIn' }}
-          />
-        ) : (
+      {pieces.map((p) => {
+        if (type === 'confetti') {
+          return (
+            <motion.span
+              key={p.id}
+              className={styles.showerPiece}
+              style={{ left: `${p.left}%`, width: p.size, height: p.size * 0.42, background: p.color }}
+              initial={{ y: '-10vh', opacity: 0, rotate: 0 }}
+              animate={{ y: '110vh', x: [0, p.drift], opacity: [0, 1, 1, 0], rotate: p.rotate }}
+              transition={{ duration: p.duration, delay: p.delay, ease: 'easeIn' }}
+            />
+          );
+        }
+        if (type === 'lantern') {
+          const hue = LANTERN_HUES[p.id % LANTERN_HUES.length];
+          return (
+            <motion.div
+              key={p.id}
+              className={`${lanternStyles.lantern} ${lanternStyles[`hue-${hue}`]}`}
+              // .lantern is CSS-anchored to bottom:0 (not top:0 like the other shower pieces) —
+              // pinning top:0 here too neutralizes that so the y keyframes below are absolute
+              // viewport offsets, not stacked on top of an extra +100vh baseline.
+              style={{ left: `${p.left}%`, top: 0, width: p.size, height: p.size * 1.3 }}
+              initial={{ y: '110vh', opacity: 0, x: 0 }}
+              animate={{ y: '-20vh', opacity: [0, 1, 1, 0], x: [0, p.drift] }}
+              transition={{ duration: p.duration, delay: p.delay, ease: 'easeOut' }}
+            >
+              <span className={lanternStyles.glow} />
+              <span className={lanternStyles.flame} />
+            </motion.div>
+          );
+        }
+        return (
           <motion.span
             key={p.id}
             className={`${styles.showerGlyph} ${type === 'heart' ? styles.glyphHeart : ''}`}
@@ -73,10 +99,10 @@ function ReactionShower({ type }: { type: ShowerType }) {
             animate={{ y: '110vh', x: [0, p.drift], opacity: [0, 1, 1, 0], rotate: p.rotate }}
             transition={{ duration: p.duration, delay: p.delay, ease: 'easeIn' }}
           >
-            {SHOWER_GLYPH[type as Exclude<ShowerType, 'confetti'>]}
+            {SHOWER_GLYPH[type]}
           </motion.span>
-        )
-      )}
+        );
+      })}
     </div>
   );
 }
@@ -88,7 +114,6 @@ export default function Wishes() {
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [reaction, setReaction] = useState(REACTIONS[0]);
-  const [counts, setCounts] = useState<Record<string, number>>({});
   const [bursts, setBursts] = useState<{ id: number; type: ShowerType }[]>([]);
   const [thankYouName, setThankYouName] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
@@ -96,6 +121,7 @@ export default function Wishes() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const thankYouTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const burstIdRef = useRef(0);
+  const lastReactAtRef = useRef(0);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const tickerRef = useRef<HTMLDivElement | null>(null);
   const pausedRef = useRef(false);
@@ -131,18 +157,30 @@ export default function Wishes() {
     el.style.height = `${Math.min(el.scrollHeight, 160)}px`;
   }, [message]);
 
-  // Fills the sky with a shower themed to the tapped reaction, for a few seconds — each click
-  // spawns its own independent burst (by id) so clicking twice fast stacks two showers instead
-  // of one silently replacing the other.
-  const handleReact = useCallback((emoji: string) => {
-    setCounts((prev) => ({ ...prev, [emoji]: (prev[emoji] ?? 0) + 1 }));
+  // Fills the sky with a shower themed to the type given, for a few seconds — each call spawns
+  // its own independent burst (by id) so rapid triggers stack instead of one silently
+  // overwriting the last. Lanterns rise much slower than the other showers, so they get longer
+  // on screen before their burst unmounts, or they'd be cut off mid-flight.
+  const triggerShower = useCallback((type: ShowerType) => {
     const id = burstIdRef.current++;
-    const type = SHOWER_TYPE[emoji] ?? 'confetti';
-    setBursts((prev) => [...prev, { id, type }]);
+    const lifetime = type === 'lantern' ? 9500 : SHOWER_LIFETIME_MS;
+    setBursts((prev) => (prev.length >= MAX_CONCURRENT_SHOWERS ? prev : [...prev, { id, type }]));
     setTimeout(() => {
       setBursts((prev) => prev.filter((b) => b.id !== id));
-    }, SHOWER_LIFETIME_MS);
+    }, lifetime);
   }, []);
+
+  // Guarded by a short cooldown so rapid/spam clicking can't pile up enough concurrent showers
+  // to bog down or crash the page.
+  const handleReact = useCallback(
+    (emoji: string) => {
+      const now = Date.now();
+      if (now - lastReactAtRef.current < REACT_COOLDOWN_MS) return;
+      lastReactAtRef.current = now;
+      triggerShower(SHOWER_TYPE[emoji] ?? 'confetti');
+    },
+    [triggerShower]
+  );
 
   // Live-syncs the wish list from Firestore once db/wedding.ts is configured with real keys —
   // until then `db` is null and the page just keeps showing the local seed wishes below.
@@ -172,6 +210,7 @@ export default function Wishes() {
       setThankYouName(name);
       setName('');
       setMessage('');
+      triggerShower('lantern');
       if (thankYouTimerRef.current) clearTimeout(thankYouTimerRef.current);
       thankYouTimerRef.current = setTimeout(() => setThankYouName(null), 4200);
     } catch (err) {
@@ -202,7 +241,6 @@ export default function Wishes() {
             aria-label={`React with ${r}`}
           >
             <span className={styles.reactEmoji}>{r}</span>
-            {counts[r] ? <span className={styles.reactCount}>{counts[r]}</span> : null}
           </button>
         ))}
       </div>

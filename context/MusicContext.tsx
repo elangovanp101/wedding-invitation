@@ -35,6 +35,12 @@ export function MusicProvider({ children }: { children: ReactNode }) {
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentSection, setCurrentSection] = useState<MusicSection>('english');
+  // Mirrors currentSection for use inside start(), which is a stable useCallback and would
+  // otherwise close over a stale 'english' default regardless of the page's actual language.
+  const currentSectionRef = useRef<MusicSection>('english');
+  useEffect(() => {
+    currentSectionRef.current = currentSection;
+  }, [currentSection]);
 
   useEffect(() => {
     const a = new Audio();
@@ -125,6 +131,13 @@ export function MusicProvider({ children }: { children: ReactNode }) {
     if (!hasStartedRef.current) {
       hasStartedRef.current = true;
       userPausedRef.current = false;
+      // Picks whichever track matches the page's language at this point (e.g. /tamil forces
+      // 'ta' before this ever runs) instead of the English default baked in at mount time.
+      const targetSrc = weddingData.musicTracks[currentSectionRef.current];
+      if (targetSrc) {
+        a.src = targetSrc;
+        a.currentTime = 0;
+      }
       fadeTo(a, null);
       return;
     }

@@ -3,8 +3,8 @@ import { motion, useReducedMotion } from 'framer-motion';
 import styles from './CarCrashIntro.module.css';
 import HeroTunnelLights from './HeroTunnelLights';
 
-// Simple timeline: two cars race in and collide, a tunnel of fairy lights glows to life
-// immediately, a heart pops out, then the invitation appears.
+// Simple timeline: two cars race in and stop side by side with a clear gap between them, a
+// tunnel of fairy lights glows to life immediately, a heart pops out, then the invitation appears.
 const IMPACT_T = 1.4;
 const TUNNEL_IN_T = IMPACT_T; // lights begin the instant the cars stop
 const HEART_IN_T = IMPACT_T + 0.3;
@@ -53,14 +53,11 @@ export default function CarCrashIntro({ onBang }: { onBang?: () => void }) {
   return (
     <motion.div
       className={styles.stage}
-      animate={{ x: [0, -6, 6, -4, 4, 0], opacity: [1, 1, 0] }}
+      animate={{ opacity: [1, 1, 0] }}
       transition={{
-        x: { duration: 0.4, delay: IMPACT_T },
-        opacity: {
-          duration: TOTAL_DURATION,
-          times: [0, (TOTAL_DURATION - FADE_OUT_DURATION) / TOTAL_DURATION, 1],
-          ease: 'easeInOut',
-        },
+        duration: TOTAL_DURATION,
+        times: [0, (TOTAL_DURATION - FADE_OUT_DURATION) / TOTAL_DURATION, 1],
+        ease: 'easeInOut',
       }}
       aria-hidden="true"
     >
@@ -69,8 +66,8 @@ export default function CarCrashIntro({ onBang }: { onBang?: () => void }) {
       <motion.div
         className={`${styles.car} ${styles.carLeft}`}
         initial={{ x: 'calc(-50% - 70vw)', opacity: 0.9 }}
-        animate={{ x: 'calc(-50% - 6vw)' }}
-        transition={{ duration: IMPACT_T, ease: [0.6, 0, 0.85, 0] }}
+        animate={{ x: 'calc(-50% - clamp(48px, 8vw, 90px))' }}
+        transition={{ duration: IMPACT_T, ease: [0.22, 1, 0.36, 1] }}
       >
         <CarSilhouette />
       </motion.div>
@@ -78,8 +75,8 @@ export default function CarCrashIntro({ onBang }: { onBang?: () => void }) {
       <motion.div
         className={`${styles.car} ${styles.carRight}`}
         initial={{ x: 'calc(-50% + 70vw)', opacity: 0.9 }}
-        animate={{ x: 'calc(-50% + 6vw)' }}
-        transition={{ duration: IMPACT_T, ease: [0.6, 0, 0.85, 0] }}
+        animate={{ x: 'calc(-50% + clamp(48px, 8vw, 90px))' }}
+        transition={{ duration: IMPACT_T, ease: [0.22, 1, 0.36, 1] }}
       >
         <CarSilhouette flipped />
       </motion.div>
@@ -91,14 +88,16 @@ export default function CarCrashIntro({ onBang }: { onBang?: () => void }) {
         transition={{ duration: 0.35, delay: IMPACT_T }}
       />
 
-      <motion.span
-        className={styles.heart}
-        initial={{ opacity: 0, scale: 0 }}
-        animate={{ opacity: [0, 1, 1, 0], scale: [0, 1.3, 1, 0.6] }}
-        transition={{ duration: 1, delay: HEART_IN_T, times: [0, 0.3, 0.75, 1] }}
-      >
-        ♥
-      </motion.span>
+      <div className={styles.heart}>
+        <motion.span
+          className={styles.heartInner}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: [0, 1, 1, 0], scale: [0, 1.3, 1, 0.6] }}
+          transition={{ duration: 1, delay: HEART_IN_T, times: [0, 0.3, 0.75, 1] }}
+        >
+          ♥
+        </motion.span>
+      </div>
 
       <div className={styles.invitationPopup}>
         <motion.div

@@ -3,12 +3,16 @@ import styles from './Intro.module.css';
 import { useLanguage } from '../../context/LanguageContext';
 
 export default function Intro() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const copy = t.invitation.intro;
 
   return (
     <section className={styles.intro}>
-      <img src="/images/couples.png" alt="" className={styles.coupleGif} />
+      <img
+        src={language === 'ta' ? '/images/mantapam.png' : '/images/couples.png'}
+        alt=""
+        className={styles.coupleGif}
+      />
       <motion.span
         className={styles.kicker}
         initial={{ opacity: 0, y: 16 }}

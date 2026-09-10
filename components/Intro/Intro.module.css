@@ -1,7 +1,7 @@
 /* filepath: /wedding-invitation/components/Intro/Intro.module.css */
 .intro {
     position: relative;
-    padding: clamp(4rem, 14vh, 8rem) 6vw;
+    padding: clamp(2.5rem, 9vh, 5rem) 6vw;
     text-align: center;
     max-width: 46rem;
     margin: 0 auto;

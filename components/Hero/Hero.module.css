@@ -76,25 +76,28 @@
 
 .names {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   justify-content: center;
-  gap: clamp(0.6rem, 2vw, 1.4rem);
+  gap: clamp(0.35rem, 1.6vw, 1.4rem);
+  width: 100%;
 }
 
 .name {
   font-family: var(--font-serif);
   font-style: italic;
-  font-size: clamp(2.6rem, 9vw, 6.5rem);
+  font-size: clamp(1.6rem, 7vw, 6.5rem);
   line-height: 1.2;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .tamilName {
   font-family: var(--font-tamil);
   font-style: normal;
-  font-size: clamp(2.2rem, 7.5vw, 5.2rem);
+  font-size: clamp(1.35rem, 5.8vw, 5.2rem);
   line-height: 1.25;
+  white-space: nowrap;
 }
 
 .heart {
