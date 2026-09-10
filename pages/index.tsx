@@ -23,6 +23,9 @@ import Footer from '../components/Footer/Footer';
 import { useLanguage } from '../context/LanguageContext';
 import type { Language } from '../data/translations';
 
+// Link-preview crawlers need an absolute URL for og:image — this is the live production domain.
+const SITE_URL = 'https://elanveena.einweit.com';
+
 const HomePage = ({ forcedLanguage, guestName }: { forcedLanguage?: Language; guestName?: string } = {}) => {
   const { setLanguage } = useLanguage();
   const [isOpened, setIsOpened] = useState(false);
@@ -70,9 +73,20 @@ const HomePage = ({ forcedLanguage, guestName }: { forcedLanguage?: Language; gu
           content="Join Elangovan and Selvaveena as they celebrate their wedding in Bangalore on 11, 12 and 13 November 2026."
         />
         <meta property="og:type" content="website" />
-        {/* PLACEHOLDER: replace /public/og-image.jpg with the final invitation artwork */}
-        <meta property="og:image" content="/og-image.jpg" />
+        <meta property="og:url" content={SITE_URL} />
+        {/* Link-preview crawlers (WhatsApp/iMessage/Facebook) require an absolute URL here —
+            a relative path silently fails to resolve for most of them. */}
+        <meta property="og:image" content={`${SITE_URL}/og-image.png`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:type" content="image/png" />
         <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="Elangovan ♥ Selvaveena — Wedding Invitation" />
+        <meta
+          name="twitter:description"
+          content="Join Elangovan and Selvaveena as they celebrate their wedding in Bangalore on 11, 12 and 13 November 2026."
+        />
+        <meta name="twitter:image" content={`${SITE_URL}/og-image.png`} />
       </Head>
 
       <AnimatePresence>

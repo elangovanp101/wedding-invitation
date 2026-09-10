@@ -59,3 +59,8 @@ The project is organized into the following main directories:
 ## License
 
 This project is licensed under the MIT License.
+
+## todos
+
+og-image.jpg for thumbnail
+favicon

@@ -89,8 +89,6 @@ export default function Footer() {
           <a
             className={styles.shareButton}
             href={`https://wa.me/?text=${encodeURIComponent(`${SHARE_TEXT} ${pageUrl}`)}`}
-            target="_blank"
-            rel="noopener noreferrer"
             aria-label="Share on WhatsApp"
           >
             <img src="/icons/whatsapp.png" alt="" className={styles.shareIcon} />
@@ -98,8 +96,6 @@ export default function Footer() {
           <a
             className={styles.shareButton}
             href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(pageUrl)}`}
-            target="_blank"
-            rel="noopener noreferrer"
             aria-label="Share on Facebook"
           >
             <img src="/icons/fb.png" alt="" className={styles.shareIcon} />
