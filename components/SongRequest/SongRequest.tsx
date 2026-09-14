@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { doc, onSnapshot, setDoc, increment, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import styles from './SongRequest.module.css';
+import DJWheel from './DJWheel';
 import { useLanguage } from '../../context/LanguageContext';
 import { db } from '../../lib/firebase';
 
@@ -132,6 +133,9 @@ export default function SongRequest() {
 
   const totalVotes = Object.values(votes).reduce((sum, n) => sum + n, 0);
   const maxVotes = Math.max(0, ...Object.values(votes));
+  // A 10% floor so the poll never looks empty before real votes come in — real shares still
+  // grow past it as guests vote.
+  const MIN_DISPLAY_PCT = 10;
 
   return (
     <section id="song-request" className={styles.section}>
@@ -152,7 +156,7 @@ export default function SongRequest() {
       <div className={styles.grid}>
         {ARTISTS.map((artist) => {
           const count = votes[artist.id] ?? 0;
-          const pct = totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0;
+          const pct = Math.max(MIN_DISPLAY_PCT, totalVotes > 0 ? Math.round((count / totalVotes) * 100) : 0);
           const picked = myPick === artist.id;
           const isTop = totalVotes > 0 && count === maxVotes && maxVotes > 0;
           return (
@@ -189,6 +193,8 @@ export default function SongRequest() {
           {copy.milestonePrefix} <strong>#{milestone.count}</strong> {copy.milestoneMid} <strong>{milestone.artist}</strong> ✦
         </motion.p>
       ) : null}
+
+      <DJWheel />
 
       <form className={styles.suggestForm} onSubmit={handleSuggest}>
         <p className={styles.suggestLabel}>{copy.suggestLabel}</p>
