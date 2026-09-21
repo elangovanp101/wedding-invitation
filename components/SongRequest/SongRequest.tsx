@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { doc, onSnapshot, setDoc, increment, collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import styles from './SongRequest.module.css';
-import DJWheel from './DJWheel';
 import { useLanguage } from '../../context/LanguageContext';
 import { db } from '../../lib/firebase';
 
@@ -193,8 +192,6 @@ export default function SongRequest() {
           {copy.milestonePrefix} <strong>#{milestone.count}</strong> {copy.milestoneMid} <strong>{milestone.artist}</strong> ✦
         </motion.p>
       ) : null}
-
-      <DJWheel />
 
       <form className={styles.suggestForm} onSubmit={handleSuggest}>
         <p className={styles.suggestLabel}>{copy.suggestLabel}</p>

@@ -9,7 +9,7 @@ export default function Intro() {
   return (
     <section className={styles.intro}>
       <img
-        src={language === 'ta' ? '/images/mantapam.png' : '/images/couples.png'}
+        src={language === 'ta' ? '/images/couples.png' : '/images/couples.png'}
         alt=""
         className={styles.coupleGif}
       />

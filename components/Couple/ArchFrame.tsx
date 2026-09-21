@@ -90,8 +90,8 @@ function DataNodeMotif({ accent }: { accent: string }) {
 
 /** Decorative heart-shaped niche frame, standing in for a portrait until real photography
  * arrives. `decor` adds a themed animation clipped inside the heart: falling binary for the
- * groom (confined below the name), a live ECG trace for the bride. The outer outline's color
- * continuously cycles blue → pink via a rotating gradient (native SVG animation, no JS). */
+ * groom (confined below the name), a live ECG trace for the bride. The outer outline is a
+ * static dark red. */
 export default function ArchFrame({ accent, className, decor }: ArchFrameProps) {
   const uid = useId();
 
@@ -101,12 +101,6 @@ export default function ArchFrame({ accent, className, decor }: ArchFrameProps) 
         <clipPath id={`heart-clip-${uid}`}>
           <path d={HEART_OUTER_PATH} />
         </clipPath>
-        <linearGradient id={`heart-grad-${uid}`} gradientUnits="userSpaceOnUse" x1="10" y1="30" x2="190" y2="230">
-          <stop offset="0%" stopColor="#7c93b8" />
-          <stop offset="50%" stopColor="#b9515f" />
-          <stop offset="100%" stopColor="#7c93b8" />
-          <animateTransform attributeName="gradientTransform" type="rotate" from="0 100 130" to="360 100 130" dur="6s" repeatCount="indefinite" />
-        </linearGradient>
       </defs>
 
       {decor === 'code' && (
@@ -145,7 +139,7 @@ export default function ArchFrame({ accent, className, decor }: ArchFrameProps) 
         </g>
       )}
 
-      <path d={HEART_OUTER_PATH} fill="none" stroke={`url(#heart-grad-${uid})`} strokeWidth="2.5" strokeLinejoin="round" />
+      <path d={HEART_OUTER_PATH} fill="none" stroke="#7a1420" strokeWidth="2.5" strokeLinejoin="round" />
       <path d={HEART_INNER_PATH} fill="none" stroke="rgba(205,168,107,0.25)" strokeWidth="1" strokeLinejoin="round" />
     </svg>
   );

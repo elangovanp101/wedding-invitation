@@ -13,26 +13,36 @@
 }
 
 .gallery {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
+    display: flex;
+    flex-direction: column;
     align-items: center;
+    gap: 2.5rem;
 }
 
-@media (min-width: 768px) {
-    .gallery {
-        grid-template-columns: 1fr 1.1fr 1fr;
-    }
+.heartsRow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .photo {
     position: relative;
     margin: 0;
+    width: clamp(140px, 34vw, 220px);
     aspect-ratio: 3 / 4;
     overflow: visible;
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.photoLeft {
+    z-index: 1;
+    margin-right: clamp(-70px, -12vw, -42px);
+}
+
+.photoRight {
+    z-index: 2;
 }
 
 .archSvg {
@@ -96,6 +106,8 @@
     align-items: center;
     gap: 1rem;
     padding: 1.5rem 0;
+    max-width: 32rem;
+    width: 100%;
 }
 
 .ornament {
