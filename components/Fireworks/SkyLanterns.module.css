@@ -35,7 +35,6 @@
   background: linear-gradient(180deg, rgba(255, 250, 235, 0.9), rgba(229, 200, 142, 0.5));
   box-shadow: 0 0 26px 10px rgba(244, 234, 217, 0.5);
 }
-
 .flame {
   position: absolute;
   bottom: -6px;

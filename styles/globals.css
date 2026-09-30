@@ -1,7 +1,9 @@
 :root {
     --color-bg: #0e0b09;
     --color-bg-soft: #15100c;
+    --bg-soft-rgb: 21, 16, 12;
     --color-ivory: #f4ead9;
+    --text-rgb: 244, 234, 217;
     --color-gold: #cda86b;
     --color-gold-soft: #e8d3a4;
     --color-gold-antique: #9c7a3f;

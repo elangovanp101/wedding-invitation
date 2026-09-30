@@ -61,7 +61,6 @@ export default function Footer() {
         viewport={{ once: true, amount: 0.6 }}
         transition={{ duration: 1.8, ease: [0.22, 1, 0.36, 1] }}
       >
-        Save the date.
       </motion.p>
 
       <motion.div

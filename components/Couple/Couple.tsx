@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import styles from './Couple.module.css';
-import ArchFrame from './ArchFrame';
 import { useLanguage } from '../../context/LanguageContext';
 import { weddingData } from '../../data/wedding';
 
@@ -21,37 +20,15 @@ export default function Couple() {
       </motion.h2>
 
       <div className={styles.gallery}>
-        <div className={styles.heartsRow}>
-          <motion.figure
-            className={`${styles.photo} ${styles.photoLeft}`}
-            initial={{ opacity: 0, x: -24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: 1 }}
-          >
-            {/* PLACEHOLDER: swap this arch frame for Elangovan's portrait */}
-            <ArchFrame accent="#7c93b8" decor="code" className={styles.archSvg} />
-            <span className={styles.monogram}>Elan</span>
-            <span className={`${styles.iconBadge} ${styles.iconBadgeGroom}`} aria-hidden="true">
-              <img src="/images/code.gif" alt="" />
-            </span>
-          </motion.figure>
-
-          <motion.figure
-            className={`${styles.photo} ${styles.photoRight}`}
-            initial={{ opacity: 0, x: 24 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, amount: 0.4 }}
-            transition={{ duration: 1 }}
-          >
-            {/* PLACEHOLDER: swap this arch frame for Selvaveena's portrait */}
-            <ArchFrame accent="#b9515f" decor="ecg" className={styles.archSvg} />
-            <span className={styles.monogram}>Veena</span>
-            <span className={`${styles.iconBadge} ${styles.iconBadgeBride}`} aria-hidden="true">
-              <img src="/images/microscope.gif" alt="" />
-            </span>
-          </motion.figure>
-        </div>
+        <motion.img
+          src="/images/elanveenacouples.png"
+          alt={content.name}
+          className={styles.coupleImage}
+          initial={{ opacity: 0, scale: 0.94 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true, amount: 0.4 }}
+          transition={{ duration: 1 }}
+        />
 
         <motion.div
           className={styles.center}

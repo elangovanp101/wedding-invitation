@@ -76,7 +76,7 @@ export default function Hero({ onOpen, guestName }: Props) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 1 }}
         >
-          11 — 13 NOVEMBER 2026
+          NOVEMBER 2026
         </motion.div>
         <motion.div
           className={styles.location}

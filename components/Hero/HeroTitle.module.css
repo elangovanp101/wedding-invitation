@@ -35,5 +35,5 @@
   font-family: var(--font-serif);
   font-size: clamp(1rem, 2vw, 1.2rem);
   line-height: 1.7;
-  color: rgba(244, 234, 217, 0.75);
+  color: rgba(var(--text-rgb), 0.75);
 }

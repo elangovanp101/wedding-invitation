@@ -12,7 +12,7 @@
 .subtitle {
   font-family: var(--font-sans);
   font-size: 0.85rem;
-  color: rgba(244, 234, 217, 0.65);
+  color: rgba(var(--text-rgb), 0.65);
   margin: 0.6rem 0 2rem;
 }
 

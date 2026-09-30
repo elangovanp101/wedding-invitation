@@ -135,9 +135,9 @@ export function TraditionalArt({ className }: ArtProps) {
             transition={{ duration: 3.6 + (i % 3) * 0.5, repeat: Infinity, ease: 'easeInOut', delay: i * 0.25 }}
           >
             <line x1={p.x} y1={p.y} x2={p.x} y2={p.y + drop} stroke="rgba(205,168,107,0.4)" strokeWidth="1" />
-            <circle cx={p.x} cy={p.y + drop + 4} r="4" fill={i % 2 === 0 ? 'rgba(232,181,90,0.85)' : 'rgba(244,234,217,0.85)'} />
+            <circle cx={p.x} cy={p.y + drop + 4} r="4" fill={i % 2 === 0 ? 'rgba(232,181,90,0.85)' : 'rgba(var(--text-rgb),0.85)'} />
             <circle cx={p.x - 4} cy={p.y + drop + 2} r="2.6" fill="rgba(232,181,90,0.7)" />
-            <circle cx={p.x + 4} cy={p.y + drop + 2} r="2.6" fill="rgba(244,234,217,0.7)" />
+            <circle cx={p.x + 4} cy={p.y + drop + 2} r="2.6" fill="rgba(var(--text-rgb),0.7)" />
           </motion.g>
         );
       })}

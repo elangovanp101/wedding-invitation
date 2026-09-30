@@ -14,7 +14,7 @@
 .subtitle {
     font-family: var(--font-sans);
     font-size: 0.85rem;
-    color: rgba(244, 234, 217, 0.6);
+    color: rgba(var(--text-rgb), 0.6);
     margin: 0.75rem 0 2.5rem;
 }
 
@@ -55,7 +55,7 @@
 .eventDate {
     font-family: var(--font-sans);
     font-size: 0.85rem;
-    color: rgba(244, 234, 217, 0.75);
+    color: rgba(var(--text-rgb), 0.75);
     margin-bottom: 0.5rem;
 }
 

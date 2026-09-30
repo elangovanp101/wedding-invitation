@@ -89,7 +89,7 @@
 .eventDate, .eventTime, .eventVenue, .eventFollow {
     font-family: var(--font-sans);
     font-size: 0.9rem;
-    color: rgba(244, 234, 217, 0.75);
+    color: rgba(var(--text-rgb), 0.75);
 }
 
 .peekButton {
