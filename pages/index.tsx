@@ -77,7 +77,7 @@ const HomePage = ({ forcedLanguage, guestName }: { forcedLanguage?: Language; gu
         <meta property="og:url" content={SITE_URL} />
         {/* Link-preview crawlers (WhatsApp/iMessage/Facebook) require an absolute URL here —
             a relative path silently fails to resolve for most of them. */}
-        <meta property="og:image" content={`${SITE_URL}/og-image.png`} />
+        <meta property="og:image" content={`${SITE_URL}/og-image1.png`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta property="og:image:type" content="image/png" />
@@ -87,7 +87,7 @@ const HomePage = ({ forcedLanguage, guestName }: { forcedLanguage?: Language; gu
           name="twitter:description"
           content="Join Elangovan and Selvaveena as they celebrate their wedding at the Palace Grounds, Bangalore, in November 2026."
         />
-        <meta name="twitter:image" content={`${SITE_URL}/og-image.png`} />
+        <meta name="twitter:image" content={`${SITE_URL}/og-image1.png`} />
       </Head>
 
       <AnimatePresence>
