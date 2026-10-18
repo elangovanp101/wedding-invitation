@@ -66,12 +66,12 @@ const HomePage = ({ forcedLanguage, guestName }: { forcedLanguage?: Language; gu
         <title>Elangovan ♥ Selvaveena — Wedding Invitation</title>
         <meta
           name="description"
-          content="Join Elangovan and Selvaveena as they celebrate their wedding in Bangalore on 11, 12 and 13 November 2026."
+          content="Join Elangovan and Selvaveena as they celebrate their wedding at the Palace Grounds, Bangalore, in November 2026."
         />
         <meta property="og:title" content="Elangovan ♥ Selvaveena — Wedding Invitation" />
         <meta
           property="og:description"
-          content="Join Elangovan and Selvaveena as they celebrate their wedding in Bangalore on 11, 12 and 13 November 2026."
+          content="Join Elangovan and Selvaveena as they celebrate their wedding at the Palace Grounds, Bangalore, in November 2026."
         />
         <meta property="og:type" content="website" />
         <meta property="og:url" content={SITE_URL} />
@@ -85,7 +85,7 @@ const HomePage = ({ forcedLanguage, guestName }: { forcedLanguage?: Language; gu
         <meta name="twitter:title" content="Elangovan ♥ Selvaveena — Wedding Invitation" />
         <meta
           name="twitter:description"
-          content="Join Elangovan and Selvaveena as they celebrate their wedding in Bangalore on 11, 12 and 13 November 2026."
+          content="Join Elangovan and Selvaveena as they celebrate their wedding at the Palace Grounds, Bangalore, in November 2026."
         />
         <meta name="twitter:image" content={`${SITE_URL}/og-image.png`} />
       </Head>
