@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { collection, addDoc, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import styles from './Wishes.module.css';
 import lanternStyles from '../Fireworks/SkyLanterns.module.css';
+import BalloonShower, { BALLOON_COLORS } from '../BalloonShower/BalloonShower';
 import { useLanguage } from '../../context/LanguageContext';
 import { weddingData } from '../../data/wedding';
 import { db } from '../../lib/firebase';
 
-const REACTIONS = ['♥', '🌸', '🎉', '🏮'];
+const REACTIONS = ['🏮', '🎉', '♥', '🌸'];
 const ACCENTS = ['accentGold', 'accentRose', 'accentJasmine', 'accentSlate'];
-const BALLOON_COLORS = ['#e63950', '#f2a93b', '#f4d35e', '#4fb286', '#4a90d9', '#9b6fd1', '#f06fa0'];
 const MAX_MESSAGE_LENGTH = 160;
 const SHOWER_LIFETIME_MS = 2800;
 const MAX_CONCURRENT_SHOWERS = 4;
@@ -43,47 +43,24 @@ function initial(name: string) {
  * spawns an independent instance (keyed by id in the parent) so rapid clicks stack instead of
  * one click's animation silently overwriting the last. */
 function ReactionShower({ type }: { type: ShowerType }) {
+  if (type === 'balloon') return <BalloonShower />;
+
   const pieces = useRef<ShowerPiece[]>(
     Array.from({ length: 30 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
-      delay: type === 'lantern' || type === 'balloon' ? Math.random() * 1.6 : Math.random() * 0.6,
-      duration: type === 'lantern' || type === 'balloon' ? 6 + Math.random() * 2.5 : 2.2 + Math.random() * 1.4,
+      delay: type === 'lantern' ? Math.random() * 1.6 : Math.random() * 0.6,
+      duration: type === 'lantern' ? 6 + Math.random() * 2.5 : 2.2 + Math.random() * 1.4,
       drift: (Math.random() - 0.5) * 60,
       rotate: (Math.random() - 0.5) * 240,
       color: BALLOON_COLORS[i % BALLOON_COLORS.length],
-      size: type === 'balloon' ? 22 + Math.random() * 16 : 14 + Math.random() * 14,
+      size: 14 + Math.random() * 14,
     }))
   ).current;
 
   return (
     <div className={styles.shower} aria-hidden="true">
       {pieces.map((p) => {
-        if (type === 'balloon') {
-          return (
-            <motion.svg
-              key={p.id}
-              viewBox="0 0 24 34"
-              className={styles.balloon}
-              style={{ left: `${p.left}%`, top: 0, width: p.size, height: p.size * 1.4 }}
-              initial={{ y: '110vh', opacity: 0, x: 0 }}
-              animate={{ y: '-20vh', opacity: [0, 1, 1, 0], x: [0, p.drift], rotate: [-6, 6, -6] }}
-              transition={{
-                duration: p.duration,
-                delay: p.delay,
-                ease: 'easeOut',
-                rotate: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
-              }}
-            >
-              <line x1="12" y1="20" x2="12" y2="33" stroke="rgba(255,255,255,0.45)" strokeWidth="0.6" />
-              <path
-                d="M12,20 C12,20 2,13 2,6.8 C2,3 4.8,1 7.6,1 C9.6,1 11.2,2.2 12,4 C12.8,2.2 14.4,1 16.4,1 C19.2,1 22,3 22,6.8 C22,13 12,20 12,20 Z"
-                fill={p.color}
-              />
-              <ellipse cx="7.5" cy="6" rx="2" ry="1.1" fill="rgba(255,255,255,0.5)" />
-            </motion.svg>
-          );
-        }
         if (type === 'lantern') {
           const hue = LANTERN_HUES[p.id % LANTERN_HUES.length];
           return (
@@ -126,7 +103,7 @@ export default function Wishes() {
   const [wishes, setWishes] = useState<Wish[]>(weddingData.wishes);
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
-  const [reaction, setReaction] = useState(REACTIONS[0]);
+  const [reaction, setReaction] = useState('♥');
   const [bursts, setBursts] = useState<{ id: number; type: ShowerType }[]>([]);
   const [thankYouName, setThankYouName] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);

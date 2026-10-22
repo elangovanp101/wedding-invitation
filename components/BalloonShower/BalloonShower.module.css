@@ -1,0 +1,14 @@
+/* Full-page shower: fixed overlay, never intercepts scroll/touch. */
+.shower {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.balloon {
+  position: absolute;
+  bottom: 0;
+  filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.35));
+}

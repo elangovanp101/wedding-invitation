@@ -5,6 +5,7 @@ import Hero from '../components/Hero/Hero';
 import HeroTitle from '../components/Hero/HeroTitle';
 import FlowerBurst from '../components/Hero/FlowerBurst';
 import Fireworks from '../components/Fireworks/Fireworks';
+import BalloonShower from '../components/BalloonShower/BalloonShower';
 import Navigation from '../components/Navigation/Navigation';
 import LanguageToggle from '../components/LanguageToggle/LanguageToggle';
 import MusicController from '../components/MusicController/MusicController';
@@ -33,8 +34,10 @@ const HomePage = ({ forcedLanguage, guestName }: { forcedLanguage?: Language; gu
   const [showBurst, setShowBurst] = useState(false);
   const [showFireworks, setShowFireworks] = useState(false);
   const [showTopFireworks, setShowTopFireworks] = useState(false);
+  const [showBalloons, setShowBalloons] = useState(false);
   const [dateRevealed, setDateRevealed] = useState(false);
   const wasAtTopRef = useRef(true);
+  const wasNearBottomRef = useRef(false);
 
   // Lets a dedicated route (e.g. /tamil) open straight into that language, so it can be
   // shared directly instead of asking every guest to toggle it themselves.
@@ -55,6 +58,19 @@ const HomePage = ({ forcedLanguage, guestName }: { forcedLanguage?: Language; gu
       const atTop = window.scrollY < 40;
       if (atTop && !wasAtTopRef.current) setShowTopFireworks(true);
       wasAtTopRef.current = atTop;
+    };
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [isOpened]);
+
+  // Balloons float up every time the guest scrolls to (or near) the very end of the page —
+  // re-triggering each time they leave and come back, same as the top fireworks above.
+  useEffect(() => {
+    if (!isOpened) return;
+    const handleScroll = () => {
+      const nearBottom = window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 80;
+      if (nearBottom && !wasNearBottomRef.current) setShowBalloons(true);
+      wasNearBottomRef.current = nearBottom;
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -107,6 +123,7 @@ const HomePage = ({ forcedLanguage, guestName }: { forcedLanguage?: Language; gu
       {showBurst && <FlowerBurst onDone={() => setShowBurst(false)} />}
       {showFireworks && <Fireworks onDone={() => setShowFireworks(false)} />}
       {showTopFireworks && <Fireworks onDone={() => setShowTopFireworks(false)} />}
+      {showBalloons && <BalloonShower onDone={() => setShowBalloons(false)} />}
 
       <div className={`pageGate ${isOpened ? 'pageGate--revealed' : 'pageGate--hidden'}`}>
         <Thoranam />
