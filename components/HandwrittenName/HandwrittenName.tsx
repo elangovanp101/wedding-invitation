@@ -14,6 +14,8 @@ export type HandwrittenNameProps = {
    * will automatically switch to a true stroke-draw animation instead of the text fallback.
    */
   paths?: HandwrittenPath[];
+  /** Scanned/exported handwritten-name PNG (or other raster image) — takes priority over `paths` and the text fallback. */
+  src?: string;
   viewBox?: string;
   as?: 'h1' | 'h2' | 'span';
   duration?: number;
@@ -25,6 +27,7 @@ export default function HandwrittenName({
   text,
   lang = 'en',
   paths,
+  src,
   viewBox = '0 0 600 200',
   as = 'span',
   duration = 2.2,
@@ -33,6 +36,21 @@ export default function HandwrittenName({
 }: HandwrittenNameProps) {
   const reduceMotion = useReducedMotion();
   const Tag = as;
+
+  if (src) {
+    return (
+      <Tag className={`${styles.fallbackName} ${className}`}>
+        <motion.img
+          src={src}
+          alt={text}
+          className={styles.nameImage}
+          initial={reduceMotion ? { clipPath: 'inset(0 0% 0 0)', opacity: 1 } : { clipPath: 'inset(0 100% 0 0)', opacity: 0 }}
+          animate={{ clipPath: 'inset(0 0% 0 0)', opacity: 1 }}
+          transition={{ duration: reduceMotion ? 0 : duration, delay: reduceMotion ? 0 : delay, ease: [0.22, 1, 0.36, 1] }}
+        />
+      </Tag>
+    );
+  }
 
   if (paths && paths.length > 0) {
     return (

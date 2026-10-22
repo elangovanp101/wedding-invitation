@@ -99,7 +99,15 @@ export default function Hero({ onOpen, guestName }: Props) {
               exit={{ opacity: 0 }}
               transition={{ duration: 1.2, ease: EASE }}
             >
-              <HandwrittenName as="h1" text="Elangovan" lang="en" duration={1.6} delay={0.1} className={styles.name} />
+              <HandwrittenName
+                as="h1"
+                text="Elangovan"
+                lang="en"
+                src="/images/handwriting/elangovan-en.png"
+                duration={1.6}
+                delay={0.1}
+                className={styles.name}
+              />
               <motion.span
                 className={styles.heart}
                 initial={{ scale: 0 }}
@@ -108,7 +116,15 @@ export default function Hero({ onOpen, guestName }: Props) {
               >
                 ♥
               </motion.span>
-              <HandwrittenName as="h1" text="Selvaveena" lang="en" duration={1.6} delay={0.5} className={styles.name} />
+              <HandwrittenName
+                as="h1"
+                text="Selvaveena"
+                lang="en"
+                src="/images/handwriting/selvaveena-en.png"
+                duration={1.6}
+                delay={0.5}
+                className={styles.name}
+              />
             </motion.div>
           ) : (
             <motion.div
@@ -123,6 +139,7 @@ export default function Hero({ onOpen, guestName }: Props) {
                 as="h1"
                 text="இளங்கோவன்"
                 lang="ta"
+                src="/images/handwriting/elangovan-ta.png"
                 duration={1.4}
                 className={`${styles.name} ${styles.tamilName}`}
               />
@@ -133,6 +150,7 @@ export default function Hero({ onOpen, guestName }: Props) {
                 as="h1"
                 text="செல்வவீணா"
                 lang="ta"
+                src="/images/handwriting/selvaveena-ta.png"
                 duration={1.4}
                 delay={0.2}
                 className={`${styles.name} ${styles.tamilName}`}

@@ -18,6 +18,14 @@
   font-style: normal;
 }
 
+.nameImage {
+  display: block;
+  height: 1em;
+  width: auto;
+  max-width: 100%;
+  object-fit: contain;
+}
+
 .svgName {
   width: 100%;
   height: auto;
