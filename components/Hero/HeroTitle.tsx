@@ -8,7 +8,7 @@ import { useLanguage } from '../../context/LanguageContext';
  * a guest scrolls back to the top.
  */
 export default function HeroTitle() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
 
   return (
     <section id="home" className={styles.heroTitle}>
@@ -19,9 +19,7 @@ export default function HeroTitle() {
         viewport={{ once: false, amount: 0.7 }}
         transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
       >
-        <h1 className={styles.names}>
-          Elangovan <span className={styles.heart}>♥</span> Selvaveena
-        </h1>
+        <h1 className={`${styles.names} ${language === 'ta' ? styles.tamilText : ''}`}>{t.invitation.hero.names}</h1>
         <p className={styles.tagline}>{t.invitation.hero.inviteText}</p>
       </motion.div>
     </section>

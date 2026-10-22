@@ -26,8 +26,8 @@
   color: var(--color-gold-soft);
 }
 
-.heart {
-  color: var(--color-gold);
+.tamilText {
+  font-family: var(--font-tamil);
   font-style: normal;
 }
 
