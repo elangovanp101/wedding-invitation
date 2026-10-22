@@ -271,6 +271,7 @@ export default function Wishes() {
         onMouseLeave={() => setPaused(false)}
         onTouchStart={() => setPaused(true)}
         onTouchEnd={() => setPaused(false)}
+        onTouchCancel={() => setPaused(false)}
       >
         <div className={styles.tickerTrack}>
           {ticker.map((wish, i) => (
