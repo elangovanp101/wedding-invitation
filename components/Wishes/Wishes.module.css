@@ -73,11 +73,10 @@
     pointer-events: none;
 }
 
-.showerPiece {
+.balloon {
     position: absolute;
-    top: 0;
-    border-radius: 1px;
-    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.35));
+    bottom: 0;
+    filter: drop-shadow(0 3px 8px rgba(0, 0, 0, 0.35));
 }
 
 .showerGlyph {

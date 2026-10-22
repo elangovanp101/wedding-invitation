@@ -9,19 +9,19 @@ import { db } from '../../lib/firebase';
 
 const REACTIONS = ['♥', '🌸', '🎉', '🏮'];
 const ACCENTS = ['accentGold', 'accentRose', 'accentJasmine', 'accentSlate'];
-const CONFETTI_COLORS = ['#cda86b', '#e8d3a4', '#8f2a3a', '#f4ead9', '#5c7d6b', '#b9515f'];
+const BALLOON_COLORS = ['#e63950', '#f2a93b', '#f4d35e', '#4fb286', '#4a90d9', '#9b6fd1', '#f06fa0'];
 const MAX_MESSAGE_LENGTH = 160;
 const SHOWER_LIFETIME_MS = 2800;
 const MAX_CONCURRENT_SHOWERS = 4;
 const REACT_COOLDOWN_MS = 500;
 
-type ShowerType = 'heart' | 'flower' | 'confetti' | 'lantern';
+type ShowerType = 'heart' | 'flower' | 'balloon' | 'lantern';
 
-// Each reaction rains down its own themed shower instead of confetti for everything.
+// Each reaction rains/rises its own themed shower instead of the same effect for everything.
 const SHOWER_TYPE: Record<string, ShowerType> = {
   '♥': 'heart',
   '🌸': 'flower',
-  '🎉': 'confetti',
+  '🎉': 'balloon',
   '🏮': 'lantern',
 };
 const SHOWER_GLYPH: Record<'heart' | 'flower', string> = {
@@ -38,37 +38,50 @@ function initial(name: string) {
   return name.trim().charAt(0).toUpperCase() || '✦';
 }
 
-/** Full-page shower themed to the reaction that was tapped — confetti paper for the party
- * popper, falling glyphs (heart/flower/fire) for the rest. Each tap spawns an independent
- * instance (keyed by id in the parent) so rapid clicks stack instead of one click's animation
- * silently overwriting the last. */
+/** Full-page shower themed to the reaction that was tapped — heart balloons floating skyward
+ * for the party popper, falling glyphs (heart/flower) or rising lanterns for the rest. Each tap
+ * spawns an independent instance (keyed by id in the parent) so rapid clicks stack instead of
+ * one click's animation silently overwriting the last. */
 function ReactionShower({ type }: { type: ShowerType }) {
   const pieces = useRef<ShowerPiece[]>(
     Array.from({ length: 30 }, (_, i) => ({
       id: i,
       left: Math.random() * 100,
-      delay: type === 'lantern' ? Math.random() * 1.6 : Math.random() * 0.6,
-      duration: type === 'lantern' ? 6 + Math.random() * 2.5 : 2.2 + Math.random() * 1.4,
+      delay: type === 'lantern' || type === 'balloon' ? Math.random() * 1.6 : Math.random() * 0.6,
+      duration: type === 'lantern' || type === 'balloon' ? 6 + Math.random() * 2.5 : 2.2 + Math.random() * 1.4,
       drift: (Math.random() - 0.5) * 60,
       rotate: (Math.random() - 0.5) * 240,
-      color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
-      size: type === 'confetti' ? 6 + Math.random() * 8 : 14 + Math.random() * 14,
+      color: BALLOON_COLORS[i % BALLOON_COLORS.length],
+      size: type === 'balloon' ? 22 + Math.random() * 16 : 14 + Math.random() * 14,
     }))
   ).current;
 
   return (
     <div className={styles.shower} aria-hidden="true">
       {pieces.map((p) => {
-        if (type === 'confetti') {
+        if (type === 'balloon') {
           return (
-            <motion.span
+            <motion.svg
               key={p.id}
-              className={styles.showerPiece}
-              style={{ left: `${p.left}%`, width: p.size, height: p.size * 0.42, background: p.color }}
-              initial={{ y: '-10vh', opacity: 0, rotate: 0 }}
-              animate={{ y: '110vh', x: [0, p.drift], opacity: [0, 1, 1, 0], rotate: p.rotate }}
-              transition={{ duration: p.duration, delay: p.delay, ease: 'easeIn' }}
-            />
+              viewBox="0 0 24 34"
+              className={styles.balloon}
+              style={{ left: `${p.left}%`, top: 0, width: p.size, height: p.size * 1.4 }}
+              initial={{ y: '110vh', opacity: 0, x: 0 }}
+              animate={{ y: '-20vh', opacity: [0, 1, 1, 0], x: [0, p.drift], rotate: [-6, 6, -6] }}
+              transition={{
+                duration: p.duration,
+                delay: p.delay,
+                ease: 'easeOut',
+                rotate: { duration: 2.4, repeat: Infinity, ease: 'easeInOut' },
+              }}
+            >
+              <line x1="12" y1="20" x2="12" y2="33" stroke="rgba(255,255,255,0.45)" strokeWidth="0.6" />
+              <path
+                d="M12,20 C12,20 2,13 2,6.8 C2,3 4.8,1 7.6,1 C9.6,1 11.2,2.2 12,4 C12.8,2.2 14.4,1 16.4,1 C19.2,1 22,3 22,6.8 C22,13 12,20 12,20 Z"
+                fill={p.color}
+              />
+              <ellipse cx="7.5" cy="6" rx="2" ry="1.1" fill="rgba(255,255,255,0.5)" />
+            </motion.svg>
           );
         }
         if (type === 'lantern') {
@@ -163,7 +176,7 @@ export default function Wishes() {
   // on screen before their burst unmounts, or they'd be cut off mid-flight.
   const triggerShower = useCallback((type: ShowerType) => {
     const id = burstIdRef.current++;
-    const lifetime = type === 'lantern' ? 9500 : SHOWER_LIFETIME_MS;
+    const lifetime = type === 'lantern' || type === 'balloon' ? 9500 : SHOWER_LIFETIME_MS;
     setBursts((prev) => (prev.length >= MAX_CONCURRENT_SHOWERS ? prev : [...prev, { id, type }]));
     setTimeout(() => {
       setBursts((prev) => prev.filter((b) => b.id !== id));
@@ -177,7 +190,7 @@ export default function Wishes() {
       const now = Date.now();
       if (now - lastReactAtRef.current < REACT_COOLDOWN_MS) return;
       lastReactAtRef.current = now;
-      triggerShower(SHOWER_TYPE[emoji] ?? 'confetti');
+      triggerShower(SHOWER_TYPE[emoji] ?? 'balloon');
     },
     [triggerShower]
   );
