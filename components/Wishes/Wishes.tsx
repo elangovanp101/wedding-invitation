@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, addDoc, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, doc, updateDoc, increment, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import styles from './Wishes.module.css';
 import lanternStyles from '../Fireworks/SkyLanterns.module.css';
 import BalloonShower, { BALLOON_COLORS } from '../BalloonShower/BalloonShower';
@@ -10,10 +10,11 @@ import { db } from '../../lib/firebase';
 
 const REACTIONS = ['🏮', '🎉', '♥', '🌸'];
 const ACCENTS = ['accentGold', 'accentRose', 'accentJasmine', 'accentSlate'];
-const MAX_MESSAGE_LENGTH = 160;
+const MAX_MESSAGE_LENGTH = 70;
 const SHOWER_LIFETIME_MS = 2800;
 const MAX_CONCURRENT_SHOWERS = 4;
 const REACT_COOLDOWN_MS = 500;
+const WISH_REACTIONS_KEY = 'wishReactions';
 
 type ShowerType = 'heart' | 'flower' | 'balloon' | 'lantern';
 
@@ -31,7 +32,16 @@ const SHOWER_GLYPH: Record<'heart' | 'flower', string> = {
 // Sky lanterns cycle through the same warm hue variants as the Fireworks show's SkyLanterns.
 const LANTERN_HUES = ['gold', 'rose', 'ivory'];
 
-type Wish = { name: string; message: string; reaction: string };
+// Instagram-style per-wish reactions — distinct from the full-page REACTIONS bar above.
+type WishReactionKind = 'heart' | 'smile' | 'confetti';
+type WishReactionCounts = { heart: number; smile: number; confetti: number };
+const WISH_REACTION_KINDS: { key: WishReactionKind; emoji: string }[] = [
+  { key: 'heart', emoji: '♥' },
+  { key: 'smile', emoji: '😊' },
+  { key: 'confetti', emoji: '🎉' },
+];
+
+type Wish = { id: string; name: string; message: string; reaction: string; reactions?: WishReactionCounts };
 type ShowerPiece = { id: number; left: number; delay: number; duration: number; drift: number; rotate: number; color: string; size: number };
 
 function initial(name: string) {
@@ -43,8 +53,6 @@ function initial(name: string) {
  * spawns an independent instance (keyed by id in the parent) so rapid clicks stack instead of
  * one click's animation silently overwriting the last. */
 function ReactionShower({ type }: { type: ShowerType }) {
-  if (type === 'balloon') return <BalloonShower />;
-
   const pieces = useRef<ShowerPiece[]>(
     Array.from({ length: 30 }, (_, i) => ({
       id: i,
@@ -57,6 +65,8 @@ function ReactionShower({ type }: { type: ShowerType }) {
       size: 14 + Math.random() * 14,
     }))
   ).current;
+
+  if (type === 'balloon') return <BalloonShower />;
 
   return (
     <div className={styles.shower} aria-hidden="true">
@@ -100,11 +110,12 @@ function ReactionShower({ type }: { type: ShowerType }) {
 export default function Wishes() {
   const { t } = useLanguage();
   const copy = t.invitation.wishes;
-  const [wishes, setWishes] = useState<Wish[]>(weddingData.wishes);
+  const [wishes, setWishes] = useState<Wish[]>(() => weddingData.wishes.map((w, i) => ({ ...w, id: `seed-${i}` })));
   const [name, setName] = useState('');
   const [message, setMessage] = useState('');
   const [reaction, setReaction] = useState('♥');
   const [bursts, setBursts] = useState<{ id: number; type: ShowerType }[]>([]);
+  const [myWishReactions, setMyWishReactions] = useState<Record<string, WishReactionKind>>({});
   const [thankYouName, setThankYouName] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -172,13 +183,61 @@ export default function Wishes() {
     [triggerShower]
   );
 
+  // Remembers which reaction (if any) this guest already gave to each wish, so taps are
+  // idempotent/switchable instead of letting the same person inflate a count by spam-clicking.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(WISH_REACTIONS_KEY);
+      if (saved) setMyWishReactions(JSON.parse(saved));
+    } catch {
+      // ignore malformed/unavailable storage
+    }
+  }, []);
+
+  // Seed/local-only wishes (no real Firestore doc behind them yet) only update in-memory —
+  // there's nothing to sync a count to until the wish itself is actually in Firestore.
+  const handleWishReact = useCallback(
+    (wishId: string, kind: WishReactionKind) => {
+      const prevKind = myWishReactions[wishId];
+      if (prevKind === kind) return;
+
+      setMyWishReactions((prev) => {
+        const next = { ...prev, [wishId]: kind };
+        try {
+          localStorage.setItem(WISH_REACTIONS_KEY, JSON.stringify(next));
+        } catch {
+          // ignore unavailable storage
+        }
+        return next;
+      });
+
+      setWishes((prev) =>
+        prev.map((w) => {
+          if (w.id !== wishId) return w;
+          const counts: WishReactionCounts = { heart: 0, smile: 0, confetti: 0, ...w.reactions };
+          if (prevKind) counts[prevKind] = Math.max(0, counts[prevKind] - 1);
+          counts[kind] += 1;
+          return { ...w, reactions: counts };
+        })
+      );
+
+      const isSynced = db && !wishId.startsWith('seed-') && !wishId.startsWith('local-');
+      if (isSynced) {
+        const updates: Record<string, ReturnType<typeof increment>> = { [`reactions.${kind}`]: increment(1) };
+        if (prevKind) updates[`reactions.${prevKind}`] = increment(-1);
+        updateDoc(doc(db, 'wishes', wishId), updates).catch((err) => console.error('Failed to record wish reaction:', err));
+      }
+    },
+    [myWishReactions]
+  );
+
   // Live-syncs the wish list from Firestore once db/wedding.ts is configured with real keys —
   // until then `db` is null and the page just keeps showing the local seed wishes below.
   useEffect(() => {
     if (!db) return;
     const q = query(collection(db, 'wishes'), orderBy('createdAt', 'desc'));
     return onSnapshot(q, (snapshot) => {
-      setWishes(snapshot.docs.map((doc) => doc.data() as Wish));
+      setWishes(snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Wish, 'id'>) })));
     });
   }, []);
 
@@ -188,14 +247,15 @@ export default function Wishes() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !message.trim() || submitting) return;
-    const newWish: Wish = { name, message: message.slice(0, MAX_MESSAGE_LENGTH), reaction };
+    const reactions: WishReactionCounts = { heart: 0, smile: 0, confetti: 0 };
+    const newWish: Omit<Wish, 'id'> = { name, message: message.slice(0, MAX_MESSAGE_LENGTH), reaction, reactions };
     setSubmitting(true);
     setSubmitError(null);
     try {
       if (db) {
         await addDoc(collection(db, 'wishes'), { ...newWish, createdAt: serverTimestamp() });
       } else {
-        setWishes((prev) => [newWish, ...prev]);
+        setWishes((prev) => [{ ...newWish, id: `local-${Date.now()}` }, ...prev]);
       }
       setThankYouName(name);
       setName('');
@@ -259,6 +319,24 @@ export default function Wishes() {
                   {wish.name} <span className={styles.reaction}>{wish.reaction}</span>
                 </p>
                 <p className={styles.message}>{wish.message}</p>
+                <div className={styles.wishReactions}>
+                  {WISH_REACTION_KINDS.map(({ key, emoji }) => {
+                    const count = wish.reactions?.[key] ?? 0;
+                    const active = myWishReactions[wish.id] === key;
+                    return (
+                      <button
+                        key={key}
+                        type="button"
+                        className={`${styles.wishReactButton} ${active ? styles.wishReactActive : ''}`}
+                        onClick={() => handleWishReact(wish.id, key)}
+                        aria-label={`React with ${emoji}`}
+                      >
+                        <span>{emoji}</span>
+                        {count > 0 && <span className={styles.wishReactCount}>{count}</span>}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </article>
           ))}
