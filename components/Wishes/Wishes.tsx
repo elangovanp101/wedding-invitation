@@ -221,8 +221,8 @@ export default function Wishes() {
         })
       );
 
-      const isSynced = db && !wishId.startsWith('seed-') && !wishId.startsWith('local-');
-      if (isSynced) {
+      const isLocalOnly = wishId.startsWith('seed-') || wishId.startsWith('local-');
+      if (db && !isLocalOnly) {
         const updates: Record<string, ReturnType<typeof increment>> = { [`reactions.${kind}`]: increment(1) };
         if (prevKind) updates[`reactions.${prevKind}`] = increment(-1);
         updateDoc(doc(db, 'wishes', wishId), updates).catch((err) => console.error('Failed to record wish reaction:', err));
