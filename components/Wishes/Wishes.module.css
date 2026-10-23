@@ -89,6 +89,10 @@
 
 /* Instagram-style horizontal ticker: a real scrollable strip with a visible, styled scrollbar
    (touch-action keeps vertical page scrolling free even while this scrolls horizontally). */
+.tickerWrap {
+    position: relative;
+}
+
 .tickerViewport {
     overflow-x: auto;
     overflow-y: hidden;
@@ -119,6 +123,32 @@
     gap: 0.9rem;
     width: max-content;
     padding: 0.25rem 6vw 0.75rem;
+}
+
+/* Mobile browsers hide custom scrollbars entirely, so this is the only hint that the strip
+   is swipeable — pointer-events:none keeps it from ever blocking the actual swipe gesture. */
+.tickerHint {
+    position: absolute;
+    right: 1.5vw;
+    top: 42%;
+    transform: translateY(-50%);
+    pointer-events: none;
+    font-size: 1.3rem;
+    color: var(--color-gold);
+    opacity: 0.8;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+    animation: tickerHintNudge 1.6s ease-in-out infinite;
+}
+
+@keyframes tickerHintNudge {
+    0%, 100% { transform: translateY(-50%) translateX(0); opacity: 0.4; }
+    50% { transform: translateY(-50%) translateX(5px); opacity: 0.9; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tickerHint {
+        animation: none;
+    }
 }
 
 .card {

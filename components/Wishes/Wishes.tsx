@@ -349,47 +349,52 @@ export default function Wishes() {
       ))}
 
       {/* Instagram-style ticker: small post chips, scrollable by hand (visible scrollbar)
-          and gently auto-scrolling otherwise; 2-3 visible at once. */}
-      <div
-        ref={tickerRef}
-        className={styles.tickerViewport}
-        onMouseEnter={pauseTicker}
-        onMouseLeave={resumeTicker}
-        onTouchStart={pauseTicker}
-        onTouchEnd={resumeTicker}
-        onTouchCancel={resumeTicker}
-      >
-        <div className={styles.tickerTrack}>
-          {ticker.map((wish, i) => (
-            <article key={`${wish.name}-${i}`} className={`${styles.card} ${styles[ACCENTS[i % ACCENTS.length]]}`}>
-              <span className={styles.avatar}>{initial(wish.name)}</span>
-              <div className={styles.cardBody}>
-                <p className={styles.author}>
-                  {wish.name} <span className={styles.reaction}>{wish.reaction}</span>
-                </p>
-                <p className={styles.message}>{wish.message}</p>
-                <div className={styles.wishReactions}>
-                  {WISH_REACTION_KINDS.map(({ key, emoji }) => {
-                    const count = wish.reactions?.[key] ?? 0;
-                    const active = myWishReactions[wish.id] === key;
-                    return (
-                      <button
-                        key={key}
-                        type="button"
-                        className={`${styles.wishReactButton} ${active ? styles.wishReactActive : ''}`}
-                        onClick={() => handleWishReact(wish.id, key)}
-                        aria-label={`React with ${emoji}`}
-                      >
-                        <span>{emoji}</span>
-                        {count > 0 && <span className={styles.wishReactCount}>{count}</span>}
-                      </button>
-                    );
-                  })}
+          and gently auto-scrolling otherwise; 2-3 visible at once. The chevron hint is a
+          pointer-events-none visual cue — mobile browsers hide custom scrollbars entirely,
+          so without it there's no indication the strip is swipeable. */}
+      <div className={styles.tickerWrap}>
+        <div
+          ref={tickerRef}
+          className={styles.tickerViewport}
+          onMouseEnter={pauseTicker}
+          onMouseLeave={resumeTicker}
+          onTouchStart={pauseTicker}
+          onTouchEnd={resumeTicker}
+          onTouchCancel={resumeTicker}
+        >
+          <div className={styles.tickerTrack}>
+            {ticker.map((wish, i) => (
+              <article key={`${wish.name}-${i}`} className={`${styles.card} ${styles[ACCENTS[i % ACCENTS.length]]}`}>
+                <span className={styles.avatar}>{initial(wish.name)}</span>
+                <div className={styles.cardBody}>
+                  <p className={styles.author}>
+                    {wish.name} <span className={styles.reaction}>{wish.reaction}</span>
+                  </p>
+                  <p className={styles.message}>{wish.message}</p>
+                  <div className={styles.wishReactions}>
+                    {WISH_REACTION_KINDS.map(({ key, emoji }) => {
+                      const count = wish.reactions?.[key] ?? 0;
+                      const active = myWishReactions[wish.id] === key;
+                      return (
+                        <button
+                          key={key}
+                          type="button"
+                          className={`${styles.wishReactButton} ${active ? styles.wishReactActive : ''}`}
+                          onClick={() => handleWishReact(wish.id, key)}
+                          aria-label={`React with ${emoji}`}
+                        >
+                          <span>{emoji}</span>
+                          {count > 0 && <span className={styles.wishReactCount}>{count}</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            </article>
-          ))}
+              </article>
+            ))}
+          </div>
         </div>
+        <span className={styles.tickerHint} aria-hidden="true">›</span>
       </div>
 
       <AnimatePresence mode="wait">
