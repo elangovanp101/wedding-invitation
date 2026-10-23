@@ -126,6 +126,10 @@ export default function Wishes() {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const tickerRef = useRef<HTMLDivElement | null>(null);
   const pausedRef = useRef(false);
+  const pauseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Mirrors myWishReactions for the onSnapshot handler below, which subscribes once on mount
+  // and would otherwise only ever see the initial (empty) value through a stale closure.
+  const myWishReactionsRef = useRef<Record<string, WishReactionKind>>({});
 
   // Auto-scrolls the ticker via real scrollLeft (so the native horizontal scrollbar always
   // reflects position and the guest can grab it to scroll manually), looping seamlessly since
@@ -183,12 +187,38 @@ export default function Wishes() {
     [triggerShower]
   );
 
+  // Mobile browsers don't reliably fire touchend/touchcancel for every gesture that starts on
+  // the ticker (e.g. a scroll that begins there), which could otherwise leave this paused
+  // forever. The failsafe timeout guarantees it always resumes within a couple seconds even if
+  // the matching "end" event never arrives.
+  const resumeTicker = useCallback(() => {
+    setPaused(false);
+    if (pauseTimeoutRef.current) {
+      clearTimeout(pauseTimeoutRef.current);
+      pauseTimeoutRef.current = null;
+    }
+  }, []);
+
+  const pauseTicker = useCallback(() => {
+    setPaused(true);
+    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+    pauseTimeoutRef.current = setTimeout(() => setPaused(false), 2500);
+  }, []);
+
+  useEffect(() => () => {
+    if (pauseTimeoutRef.current) clearTimeout(pauseTimeoutRef.current);
+  }, []);
+
   // Remembers which reaction (if any) this guest already gave to each wish, so taps are
   // idempotent/switchable instead of letting the same person inflate a count by spam-clicking.
   useEffect(() => {
     try {
       const saved = localStorage.getItem(WISH_REACTIONS_KEY);
-      if (saved) setMyWishReactions(JSON.parse(saved));
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        myWishReactionsRef.current = parsed;
+        setMyWishReactions(parsed);
+      }
     } catch {
       // ignore malformed/unavailable storage
     }
@@ -203,6 +233,7 @@ export default function Wishes() {
 
       setMyWishReactions((prev) => {
         const next = { ...prev, [wishId]: kind };
+        myWishReactionsRef.current = next;
         try {
           localStorage.setItem(WISH_REACTIONS_KEY, JSON.stringify(next));
         } catch {
@@ -225,7 +256,10 @@ export default function Wishes() {
       if (db && !isLocalOnly) {
         const updates: Record<string, ReturnType<typeof increment>> = { [`reactions.${kind}`]: increment(1) };
         if (prevKind) updates[`reactions.${prevKind}`] = increment(-1);
-        updateDoc(doc(db, 'wishes', wishId), updates).catch((err) => console.error('Failed to record wish reaction:', err));
+        // console.warn (not .error) on purpose — until the Firestore rules allow updating the
+        // `reactions` field, this is an expected/handled failure, not a real bug, and
+        // console.error gets auto-promoted into Next's blocking dev error overlay.
+        updateDoc(doc(db, 'wishes', wishId), updates).catch((err) => console.warn('Could not sync wish reaction (check Firestore rules):', err));
       }
     },
     [myWishReactions]
@@ -237,7 +271,22 @@ export default function Wishes() {
     if (!db) return;
     const q = query(collection(db, 'wishes'), orderBy('createdAt', 'desc'));
     return onSnapshot(q, (snapshot) => {
-      setWishes(snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<Wish, 'id'>) })));
+      setWishes(
+        snapshot.docs.map((d) => {
+          const wish = { id: d.id, ...(d.data() as Omit<Wish, 'id'>) };
+          // The Firestore write behind a reaction can be rejected by security rules (update isn't
+          // always allowlisted there) without the guest ever knowing — so a live snapshot refresh
+          // would otherwise silently wipe out a reaction that only ever applied locally. Re-assert
+          // this device's own pick on top of whatever the server has, every time.
+          const myKind = myWishReactionsRef.current[wish.id];
+          if (myKind) {
+            const counts: WishReactionCounts = { heart: 0, smile: 0, confetti: 0, ...wish.reactions };
+            counts[myKind] = Math.max(counts[myKind], 1);
+            wish.reactions = counts;
+          }
+          return wish;
+        })
+      );
     });
   }, []);
 
@@ -304,11 +353,11 @@ export default function Wishes() {
       <div
         ref={tickerRef}
         className={styles.tickerViewport}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
-        onTouchStart={() => setPaused(true)}
-        onTouchEnd={() => setPaused(false)}
-        onTouchCancel={() => setPaused(false)}
+        onMouseEnter={pauseTicker}
+        onMouseLeave={resumeTicker}
+        onTouchStart={pauseTicker}
+        onTouchEnd={resumeTicker}
+        onTouchCancel={resumeTicker}
       >
         <div className={styles.tickerTrack}>
           {ticker.map((wish, i) => (
