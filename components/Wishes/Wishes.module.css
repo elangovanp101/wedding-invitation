@@ -30,6 +30,13 @@
     padding: 0 6vw;
 }
 
+.reactBarItem {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.35rem;
+}
+
 .reactButton {
     position: relative;
     width: 66px;
@@ -56,6 +63,13 @@
 
 .reactEmoji {
     pointer-events: none;
+}
+
+.reactCount {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: rgba(var(--text-rgb), 0.65);
 }
 
 @media (prefers-reduced-motion: reduce) {

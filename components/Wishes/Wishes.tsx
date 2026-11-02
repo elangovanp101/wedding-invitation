@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useEffect, FormEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { collection, addDoc, doc, updateDoc, increment, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, doc, setDoc, updateDoc, increment, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import styles from './Wishes.module.css';
 import lanternStyles from '../Fireworks/SkyLanterns.module.css';
 import BalloonShower, { BALLOON_COLORS } from '../BalloonShower/BalloonShower';
@@ -31,6 +31,11 @@ const SHOWER_GLYPH: Record<'heart' | 'flower', string> = {
 };
 // Sky lanterns cycle through the same warm hue variants as the Fireworks show's SkyLanterns.
 const LANTERN_HUES = ['gold', 'rose', 'ivory'];
+
+// The displayed count for each top reaction is this seed plus however many real clicks have
+// landed in Firestore since launch — so the bar never looks empty on day one, without ever
+// needing Firestore itself to be manually pre-seeded.
+const REACTION_SEED_COUNTS: Record<ShowerType, number> = { lantern: 150, balloon: 160, heart: 180, flower: 200 };
 
 // Instagram-style per-wish reactions — distinct from the full-page REACTIONS bar above.
 type WishReactionKind = 'heart' | 'smile' | 'confetti';
@@ -115,6 +120,7 @@ export default function Wishes() {
   const [message, setMessage] = useState('');
   const [reaction, setReaction] = useState('♥');
   const [bursts, setBursts] = useState<{ id: number; type: ShowerType }[]>([]);
+  const [reactionDeltas, setReactionDeltas] = useState<Partial<Record<ShowerType, number>>>({});
   const [myWishReactions, setMyWishReactions] = useState<Record<string, WishReactionKind>>({});
   const [thankYouName, setThankYouName] = useState<string | null>(null);
   const [paused, setPaused] = useState(false);
@@ -182,10 +188,27 @@ export default function Wishes() {
       const now = Date.now();
       if (now - lastReactAtRef.current < REACT_COOLDOWN_MS) return;
       lastReactAtRef.current = now;
-      triggerShower(SHOWER_TYPE[emoji] ?? 'balloon');
+      const type = SHOWER_TYPE[emoji] ?? 'balloon';
+      triggerShower(type);
+
+      setReactionDeltas((prev) => ({ ...prev, [type]: (prev[type] ?? 0) + 1 }));
+      if (db) {
+        setDoc(doc(db, 'reactionTally', 'tally'), { [type]: increment(1) }, { merge: true }).catch((err) =>
+          console.warn('Could not sync reaction count (check Firestore rules):', err)
+        );
+      }
     },
     [triggerShower]
   );
+
+  // Live-syncs the top reaction-bar counts the same way the song-vote tally does — a single
+  // shared doc everyone reads/writes, counting real clicks since launch.
+  useEffect(() => {
+    if (!db) return;
+    return onSnapshot(doc(db, 'reactionTally', 'tally'), (snap) => {
+      setReactionDeltas((snap.data() as Partial<Record<ShowerType, number>>) ?? {});
+    });
+  }, []);
 
   // Mobile browsers don't reliably fire touchend/touchcancel for every gesture that starts on
   // the ticker (e.g. a scroll that begins there), which could otherwise leave this paused
@@ -330,18 +353,24 @@ export default function Wishes() {
       <p className={styles.subtitle}>{copy.subtitle}</p>
 
       <div className={styles.reactBar}>
-        {REACTIONS.map((r, i) => (
-          <button
-            key={r}
-            type="button"
-            className={styles.reactButton}
-            style={{ animationDelay: `${i * 0.3}s` }}
-            onClick={() => handleReact(r)}
-            aria-label={`React with ${r}`}
-          >
-            <span className={styles.reactEmoji}>{r}</span>
-          </button>
-        ))}
+        {REACTIONS.map((r, i) => {
+          const type = SHOWER_TYPE[r] ?? 'balloon';
+          const count = REACTION_SEED_COUNTS[type] + (reactionDeltas[type] ?? 0);
+          return (
+            <div key={r} className={styles.reactBarItem}>
+              <button
+                type="button"
+                className={styles.reactButton}
+                style={{ animationDelay: `${i * 0.3}s` }}
+                onClick={() => handleReact(r)}
+                aria-label={`React with ${r}`}
+              >
+                <span className={styles.reactEmoji}>{r}</span>
+              </button>
+              <span className={styles.reactCount}>{count.toLocaleString()}</span>
+            </div>
+          );
+        })}
       </div>
 
       {bursts.map((b) => (
