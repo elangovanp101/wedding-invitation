@@ -21,6 +21,7 @@ import Venue from '../components/Venue/Venue';
 import Wishes from '../components/Wishes/Wishes';
 import SongRequest from '../components/SongRequest/SongRequest';
 import RSVP from '../components/RSVP/RSVP';
+import BusShuttle from '../components/BusShuttle/BusShuttle';
 import Footer from '../components/Footer/Footer';
 import { useLanguage } from '../context/LanguageContext';
 import type { Language } from '../data/translations';
@@ -147,6 +148,7 @@ const HomePage = ({ forcedLanguage, guestName }: { forcedLanguage?: Language; gu
           <Wishes />
           <SongRequest />
           <RSVP />
+          <BusShuttle />
         </main>
         <Footer />
         <MusicController />

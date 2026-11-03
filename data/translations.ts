@@ -9,6 +9,7 @@ export const translations = {
         gallery: "Gallery",
         wishes: "Wishes",
         rsvp: "Reminders",
+        busService: "Bus Service",
       },
       hero: {
         names: "ELANGOVAN ♥ SELVAVEENA",
@@ -56,6 +57,16 @@ export const translations = {
         viewMap: "VIEW MAP",
         getDirections: "GET DIRECTIONS",
       },
+      busShuttle: {
+        title: "Reception Shuttle Bus",
+        subtitle: "A shuttle is arranged for the Reception.",
+        pickupLabel: "PICKUP",
+        dropLabel: "DROP BACK",
+        pickupLocationLabel: "Pickup point",
+        destinationLabel: "Destination",
+        viewMap: "VIEW PICKUP POINT",
+        routeCaption: "Ramachandra Pura → Palace Grounds",
+      },
       gallery: {
         title: "Gallery",
         subtitle: "Our Moments",
@@ -100,6 +111,7 @@ export const translations = {
         gallery: "கேலரி",
         wishes: "வாழ்த்துகள்",
         rsvp: "நினைவூட்டல்",
+        busService: "பேருந்து சேவை",
       },
       hero: {
         names: "இளங்கோவன் ♥ செல்வவீணா",
@@ -146,6 +158,16 @@ export const translations = {
         reception: "பாலஸ் கிரவுண்ட், சீஷ் மஹால், பெங்களூரு",
         viewMap: "மேப்பைக் காண்க",
         getDirections: "வழிகளைப் பெறவும்",
+      },
+      busShuttle: {
+        title: "வரவேற்பு விழா பேருந்து",
+        subtitle: "வரவேற்பு விழாவிற்கு பேருந்து சேவை ஏற்பாடு செய்யப்பட்டுள்ளது.",
+        pickupLabel: "பிக்அப்",
+        dropLabel: "திரும்பும் நேரம்",
+        pickupLocationLabel: "பிக்அப் இடம்",
+        destinationLabel: "இலக்கு",
+        viewMap: "பிக்அப் இடத்தைக் காண்க",
+        routeCaption: "ராமச்சந்திரபுரா → பாலஸ் கிரவுண்ட்",
       },
       gallery: {
         title: "கேலரி",

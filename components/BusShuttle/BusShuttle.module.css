@@ -1,0 +1,152 @@
+.section {
+    padding: clamp(2.5rem, 8vh, 4.5rem) 6vw;
+    max-width: 60rem;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.title {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 5vw, 3.2rem);
+    color: var(--color-gold-soft);
+}
+
+.subtitle {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: rgba(var(--text-rgb), 0.65);
+    margin: 0.75rem auto 2.5rem;
+    max-width: 34rem;
+}
+
+.routeWrap {
+    margin-bottom: 2.5rem;
+}
+
+.routeLine {
+    position: relative;
+    height: 2px;
+    background: repeating-linear-gradient(
+        90deg,
+        rgba(205, 168, 107, 0.4) 0 10px,
+        transparent 10px 20px
+    );
+    margin: 0 1.5rem;
+}
+
+.bus {
+    position: absolute;
+    top: 50%;
+    font-size: 1.3rem;
+    line-height: 1;
+    transform: translate(-50%, -50%);
+}
+
+.busPickup {
+    top: 30%;
+}
+
+.busDrop {
+    top: 70%;
+    /* Same emoji, mirrored, so it visibly drives the opposite way along the line. */
+    transform: translate(-50%, -50%) scaleX(-1);
+}
+
+.routeEnds {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.6rem;
+    padding: 0 1rem;
+    font-family: var(--font-sans);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    color: var(--color-gold);
+}
+
+.routeCaption {
+    font-family: var(--font-sans);
+    font-size: 0.7rem;
+    color: rgba(var(--text-rgb), 0.5);
+    margin-top: 0.5rem;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    text-align: left;
+}
+
+@media (min-width: 768px) {
+    .grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+.card {
+    padding: 1.75rem;
+    border: 1px solid rgba(205, 168, 107, 0.25);
+    border-radius: 12px;
+    background: rgba(var(--text-rgb), 0.03);
+}
+
+.cardLabel {
+    display: inline-block;
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    letter-spacing: 0.22em;
+    color: var(--color-gold);
+    margin-bottom: 0.75rem;
+}
+
+.locationLine {
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    color: rgba(var(--text-rgb), 0.85);
+    margin-bottom: 0.25rem;
+}
+
+.locationLine strong {
+    color: var(--color-gold-soft);
+}
+
+.dateLine {
+    font-family: var(--font-sans);
+    font-size: 0.75rem;
+    color: rgba(var(--text-rgb), 0.55);
+    margin-bottom: 1rem;
+}
+
+.timeList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0 0 1.25rem;
+    padding: 0;
+}
+
+.timeList li {
+    font-family: var(--font-sans);
+    font-size: 0.78rem;
+    padding: 0.35rem 0.7rem;
+    border: 1px solid rgba(205, 168, 107, 0.3);
+    border-radius: 999px;
+    color: rgba(var(--text-rgb), 0.85);
+}
+
+.mapLink {
+    display: inline-block;
+    padding: 0.6rem 1.3rem;
+    font-family: var(--font-sans);
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    border: 1px solid rgba(205, 168, 107, 0.5);
+    color: var(--color-gold-soft);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.mapLink:hover {
+    background: var(--color-gold);
+    color: #17110a;
+}

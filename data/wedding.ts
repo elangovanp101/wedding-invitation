@@ -123,6 +123,16 @@ export const weddingData = {
       directionsUrl: mapsDirectionsUrl("Palace Ground, Sheesh Mahal, Bangalore"),
     }
   },
+  // Free shuttle arranged for the Reception — pickup/drop timings are fixed round trips,
+  // not a live tracker, so plain time strings are enough (no real-time data needed).
+  busShuttle: {
+    date: "12 November 2026",
+    pickupLocation: "Ramachandra Pura, Bengaluru 560013",
+    pickupMapUrl: "https://maps.app.goo.gl/TrqD86KqagbXokAU9",
+    destination: "Palace Grounds",
+    pickupTimes: ["5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM"],
+    dropTimes: ["8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM", "11:00 PM", "12:00 AM"],
+  },
   // PLACEHOLDER: english track reuses the Tamil song for now — swap in an English-appropriate track later.
   musicTracks: {
     english: "/audio/tamil_song.mp3",

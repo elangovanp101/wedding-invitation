@@ -10,6 +10,7 @@ const links = [
   { id: 'venue', key: 'venue' },
   { id: 'wishes', key: 'wishes' },
   { id: 'rsvp', key: 'rsvp' },
+  { id: 'bus-shuttle', key: 'busService' },
 ] as const;
 
 /** Discreet floating navigation — no full navbar, expands into a small menu on demand. */
