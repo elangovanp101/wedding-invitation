@@ -128,7 +128,7 @@ export const weddingData = {
   busShuttle: {
     date: "12 November 2026",
     pickupLocation: "Ramachandra Pura, Bengaluru 560013",
-    pickupMapUrl: "https://maps.app.goo.gl/TrqD86KqagbXokAU9",
+    pickupMapUrl: "https://maps.app.goo.gl/QTrxxsJXv4WBYXLX9?g_st=iw",
     destination: "Palace Grounds",
     pickupTimes: ["5:30 PM", "6:00 PM", "6:30 PM", "7:00 PM", "7:30 PM", "8:00 PM"],
     dropTimes: ["8:30 PM", "9:00 PM", "9:30 PM", "10:00 PM", "11:00 PM", "12:00 AM"],
