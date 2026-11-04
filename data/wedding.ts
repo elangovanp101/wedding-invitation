@@ -58,7 +58,7 @@ export function icsDataUrl(event: CalendarEvent) {
 export const weddingData = {
   couple: {
     english: {
-      name: "Elangovan ♥ Selvaveena",
+      name: "Mr. Elangovan ♥ Dr. Selvaveena",
       story: "Elan and Veena are delighted to invite you to be part of their wedding celebrations in Bangalore — a journey that brings together faith, family, love, and Tamil tradition."
     },
     tamil: {
